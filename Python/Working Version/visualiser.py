@@ -1,19 +1,282 @@
-"""
-This module provides a unified visualisation class for projection results.
-
-Classes:
-- Visualiser:
-    Handles all visualisation of projection solver results including half-spaces,
-    paths, errors, and active half-space tracking.
-"""
-
+import csv
+import os
+from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
+from matplotlib.patches import Rectangle
 from matplotlib import cm
 from projection_result import ProjectionResult
+
+
+class ResultExporter:
+    
+    @staticmethod
+    def export(result: ProjectionResult, output_path: str, solver_name: str,
+               initial_point: np.ndarray, N: np.ndarray, c: np.ndarray,
+               max_iter: int, **kwargs) -> None:
+        
+        if os.path.isdir(output_path) or not output_path.endswith('.csv'):
+            os_path = Path(output_path)
+            os_path.mkdir(parents=True, exist_ok=True)
+            filename = f"{solver_name}_{max_iter}_iterations.csv"
+            output_path = os.path.join(output_path, filename)
+        else:
+            directory = os.path.dirname(output_path)
+            if directory:
+                Path(directory).mkdir(parents=True, exist_ok=True)
+        
+        with open(output_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            
+            writer.writerow(['METADATA'])
+            writer.writerow(['solver_name', solver_name])
+            writer.writerow(['max_iterations', max_iter])
+            writer.writerow(['dimensions', len(initial_point)])
+            writer.writerow(['num_constraints', N.shape[0]])
+            
+            for key, value in kwargs.items():
+                writer.writerow([key, value])
+            
+            writer.writerow([])
+            
+            writer.writerow(['INITIAL_POINT'])
+            writer.writerow(['z_' + str(i) for i in range(len(initial_point))])
+            writer.writerow(initial_point)
+            writer.writerow([])
+            
+            writer.writerow(['FINAL_PROJECTION'])
+            writer.writerow(['projection_' + str(i) for i in range(len(result.projection))])
+            writer.writerow(result.projection)
+            writer.writerow([])
+            
+            writer.writerow(['CONSTRAINTS_N'])
+            for i, normal in enumerate(N):
+                writer.writerow([f'normal_{i}'] + normal.tolist())
+            writer.writerow([])
+            
+            writer.writerow(['CONSTRAINTS_C'])
+            writer.writerow(['c_' + str(i) for i in range(len(c))])
+            writer.writerow(c)
+            writer.writerow([])
+            
+            if result.path is not None:
+                writer.writerow(['PATH_HISTORY'])
+                writer.writerow(['iteration', 'constraint', 'dim_0', 'dim_1'] + 
+                              [f'dim_{i}' for i in range(2, len(initial_point))])
+                
+                path = result.path
+                for i in range(path.shape[0]):
+                    for m in range(path.shape[1]):
+                        writer.writerow([i, m] + path[i, m].tolist())
+                writer.writerow([])
+            
+            if result.squared_errors is not None:
+                writer.writerow(['SQUARED_ERRORS'])
+                writer.writerow(['iteration', 'squared_error'])
+                for i, error in enumerate(result.squared_errors):
+                    writer.writerow([i, error])
+                writer.writerow([])
+            
+            if result.stalled_errors is not None:
+                writer.writerow(['STALLED_ERRORS'])
+                writer.writerow(['iteration', 'stalled_error'])
+                for i, error in enumerate(result.stalled_errors):
+                    error_val = error if error is not None else ''
+                    writer.writerow([i, error_val])
+                writer.writerow([])
+            
+            if result.converged_errors is not None:
+                writer.writerow(['CONVERGED_ERRORS'])
+                writer.writerow(['iteration', 'converged_error'])
+                for i, error in enumerate(result.converged_errors):
+                    error_val = error if error is not None else ''
+                    writer.writerow([i, error_val])
+                writer.writerow([])
+            
+            if result.errors_for_plotting is not None:
+                writer.writerow(['ERRORS_FOR_PLOTTING'])
+                writer.writerow(['iteration', 'constraint', 'dim_0', 'dim_1'] +
+                              [f'dim_{i}' for i in range(2, len(initial_point))])
+                
+                errors = result.errors_for_plotting
+                for i in range(errors.shape[0]):
+                    for m in range(errors.shape[1]):
+                        writer.writerow([i, m] + errors[i, m].tolist())
+                writer.writerow([])
+            
+            if result.active_half_spaces is not None:
+                writer.writerow(['ACTIVE_HALFSPACES'])
+                writer.writerow(['constraint'] + [f'iteration_{i}' for i in range(max_iter)])
+                
+                active = result.active_half_spaces
+                for m in range(active.shape[0]):
+                    writer.writerow([m] + active[m].tolist())
+                writer.writerow([])
+        
+        print(f"Results exported to: {output_path}")
+    
+    @staticmethod
+    def load(csv_path: str) -> dict:
+        data = {}
+        
+        with open(csv_path, 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            lines = list(reader)
+        
+        i = 0
+        while i < len(lines):
+            if not lines[i] or not lines[i][0]:
+                i += 1
+                continue
+            
+            section_name = lines[i][0].strip()
+            i += 1
+            
+            if section_name == 'METADATA':
+                data['metadata'] = {}
+                while i < len(lines) and lines[i] and lines[i][0]:
+                    if lines[i][0] in ['INITIAL_POINT', 'FINAL_PROJECTION', 'CONSTRAINTS_N',
+                                       'CONSTRAINTS_C', 'PATH_HISTORY', 'SQUARED_ERRORS',
+                                       'STALLED_ERRORS', 'CONVERGED_ERRORS', 
+                                       'ERRORS_FOR_PLOTTING', 'ACTIVE_HALFSPACES']:
+                        break
+                    key, val = lines[i][0], lines[i][1] if len(lines[i]) > 1 else ''
+                    try:
+                        data['metadata'][key] = int(val)
+                    except (ValueError, IndexError):
+                        try:
+                            data['metadata'][key] = float(val)
+                        except (ValueError, IndexError):
+                            data['metadata'][key] = val
+                    i += 1
+            
+            elif section_name == 'INITIAL_POINT':
+                i += 1
+                data['initial_point'] = np.array([float(x) for x in lines[i]])
+                i += 1
+            
+            elif section_name == 'FINAL_PROJECTION':
+                i += 1
+                data['final_projection'] = np.array([float(x) for x in lines[i]])
+                i += 1
+            
+            elif section_name == 'CONSTRAINTS_N':
+                normals = []
+                while i < len(lines) and lines[i] and lines[i][0]:
+                    if lines[i][0] in ['CONSTRAINTS_C', 'PATH_HISTORY', 'SQUARED_ERRORS',
+                                      'STALLED_ERRORS', 'CONVERGED_ERRORS',
+                                      'ERRORS_FOR_PLOTTING', 'ACTIVE_HALFSPACES']:
+                        break
+                    normals.append(np.array([float(x) for x in lines[i][1:]]))
+                    i += 1
+                data['constraints_N'] = np.array(normals)
+            
+            elif section_name == 'CONSTRAINTS_C':
+                i += 1
+                data['constraints_c'] = np.array([float(x) for x in lines[i]])
+                i += 1
+            
+            elif section_name == 'PATH_HISTORY':
+                i += 1
+                path_data = []
+                while i < len(lines) and lines[i] and len(lines[i]) > 2:
+                    if lines[i][0] in ['SQUARED_ERRORS', 'STALLED_ERRORS', 'CONVERGED_ERRORS',
+                                      'ERRORS_FOR_PLOTTING', 'ACTIVE_HALFSPACES']:
+                        break
+                    try:
+                        int(lines[i][0])
+                        path_data.append([float(x) for x in lines[i][2:]])
+                    except (ValueError, IndexError):
+                        break
+                    i += 1
+                if path_data:
+                    data['path'] = np.array(path_data)
+            
+            elif section_name == 'SQUARED_ERRORS':
+                i += 1
+                errors = []
+                while i < len(lines) and lines[i] and len(lines[i]) > 1:
+                    if lines[i][0] in ['STALLED_ERRORS', 'CONVERGED_ERRORS',
+                                      'ERRORS_FOR_PLOTTING', 'ACTIVE_HALFSPACES']:
+                        break
+                    try:
+                        int(lines[i][0])
+                        errors.append(float(lines[i][1]))
+                    except (ValueError, IndexError):
+                        break
+                    i += 1
+                if errors:
+                    data['squared_errors'] = np.array(errors)
+            
+            elif section_name == 'STALLED_ERRORS':
+                i += 1
+                errors = []
+                while i < len(lines) and lines[i] and len(lines[i]) > 1:
+                    if lines[i][0] in ['CONVERGED_ERRORS', 'ERRORS_FOR_PLOTTING', 'ACTIVE_HALFSPACES']:
+                        break
+                    try:
+                        int(lines[i][0])
+                        val = lines[i][1] if lines[i][1] else None
+                        errors.append(float(val) if val else None)
+                    except (ValueError, IndexError):
+                        break
+                    i += 1
+                if errors:
+                    data['stalled_errors'] = np.array(errors, dtype=object)
+            
+            elif section_name == 'CONVERGED_ERRORS':
+                i += 1
+                errors = []
+                while i < len(lines) and lines[i] and len(lines[i]) > 1:
+                    if lines[i][0] in ['ERRORS_FOR_PLOTTING', 'ACTIVE_HALFSPACES']:
+                        break
+                    try:
+                        int(lines[i][0])
+                        val = lines[i][1] if lines[i][1] else None
+                        errors.append(float(val) if val else None)
+                    except (ValueError, IndexError):
+                        break
+                    i += 1
+                if errors:
+                    data['converged_errors'] = np.array(errors, dtype=object)
+            
+            elif section_name == 'ERRORS_FOR_PLOTTING':
+                i += 1
+                errors_data = []
+                while i < len(lines) and lines[i] and len(lines[i]) > 2:
+                    if lines[i][0] in ['ACTIVE_HALFSPACES']:
+                        break
+                    try:
+                        int(lines[i][0])
+                        errors_data.append([float(x) for x in lines[i][2:]])
+                    except (ValueError, IndexError):
+                        break
+                    i += 1
+                if errors_data:
+                    data['errors_for_plotting'] = np.array(errors_data)
+            
+            elif section_name == 'ACTIVE_HALFSPACES':
+                i += 1
+                active_data = []
+                while i < len(lines) and lines[i]:
+                    if not lines[i][0]:
+                        break
+                    try:
+                        int(lines[i][0])
+                        active_data.append([int(float(x)) for x in lines[i][1:]])
+                    except (ValueError, IndexError):
+                        break
+                    i += 1
+                if active_data:
+                    data['active_halfspaces'] = np.array(active_data)
+            
+            else:
+                i += 1
+        
+        return data
 
 
 class Visualiser:
@@ -403,5 +666,214 @@ class VerticalVisualiser(Visualiser):
             self.ax_activity.legend(loc='center right', fontsize=self.fontsize_legend)
 
         plt.subplots_adjust(hspace=0.4)
+        plt.tight_layout()
+        plt.show()
+
+
+class ComparisonVisualiser:
+    
+    def __init__(self, result1: ProjectionResult, result2: ProjectionResult,
+                 nc_pairs1: list, nc_pairs2: list,
+                 max_iter: int, x_range: list[float], y_range: list[float],
+                 solver_name1: str, solver_name2: str,
+                 initial_point: np.ndarray,
+                 display_result_index: int = 0,
+                 display_halfspace_index: int = 0) -> None:
+        
+        self.result1 = result1
+        self.result2 = result2
+        self.nc_pairs1 = nc_pairs1
+        self.nc_pairs2 = nc_pairs2
+        self.max_iter = max_iter
+        self.x_range = x_range
+        self.y_range = y_range
+        self.solver_name1 = solver_name1
+        self.solver_name2 = solver_name2
+        self.initial_point = initial_point
+        self.display_result_index = display_result_index
+        self.display_halfspace_index = display_halfspace_index
+        self.fig: Figure | None = None
+        self.fontsize_title = 16
+        self.fontsize_label = 14
+        self.fontsize_tick = 12
+        self.fontsize_legend = 12
+    
+    def plot_2d_space(self, N: np.ndarray, c: np.ndarray, X: np.ndarray, Y: np.ndarray,
+                      label: str, cmap: str, ax: Axes) -> None:
+        
+        Z = np.ones_like(X)
+        for i in range(N.shape[0]):
+            dot_product = np.dot(np.vstack([X.ravel(), Y.ravel()]).T, N[i])
+            Z = np.where(dot_product.reshape(X.shape) > c[i], 0, Z)
+
+        colourmap = cm.get_cmap(cmap)
+        colour = colourmap(0.69)
+        ax.contourf(X, Y, Z, levels=[0.5, 1.5], colors=[colour], alpha=0.5)
+        ax.plot([], [], color=colour, alpha=0.5, label=label)
+
+    def plot_1d_space(self, N: np.ndarray, c: np.ndarray, label: str, 
+                      cmap: str, ax: Axes) -> None:
+        
+        colourmap = cm.get_cmap(cmap)
+        colour = colourmap(0.69)
+        if N[0, 1] == 0:
+            ax.axvline(x=c[0] / N[0, 0], linestyle='-', linewidth=2,
+                        label='Vertical line', color=colour)
+        elif N[0, 0] == 0:
+            ax.axhline(y=c[0] / N[0, 1], linestyle='-', linewidth=2,
+                        label='Horizontal line', color=colour)
+        else:
+            x_line = np.linspace(self.x_range[0], self.x_range[1], 100)
+            y_line = (c[0] - N[0, 0] * x_line) / N[0, 1]
+            ax.plot(x_line, y_line, linewidth=2, label=label, color=colour)
+
+    def plot_top_projection(self, ax: Axes) -> None:
+        
+        result = self.result1 if self.display_result_index == 0 else self.result2
+        nc_pairs = self.nc_pairs1 if self.display_result_index == 0 else self.nc_pairs2
+        solver_name = self.solver_name1 if self.display_result_index == 0 else self.solver_name2
+        
+        try:
+            x = np.linspace(self.x_range[0], self.x_range[1], 500)
+            y = np.linspace(self.y_range[0], self.y_range[1], 500)
+            X, Y = np.meshgrid(x, y)
+
+            for label, cmap, N, c in nc_pairs:
+                rank = np.linalg.matrix_rank(N)
+                if rank == 1:
+                    self.plot_1d_space(N, c, label, cmap, ax)
+                elif rank == 2:
+                    self.plot_2d_space(N, c, X, Y, label, cmap, ax)
+
+            ax.set_aspect('equal')
+            ax.set_xlabel('X', fontsize=self.fontsize_label)
+            ax.set_ylabel('Y', fontsize=self.fontsize_label)
+            ax.set_title(f"{solver_name} - {self.max_iter - 1} iterations", fontsize=self.fontsize_title)
+            ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
+            ax.grid(True)
+            
+            path = result.path
+            if path is not None:
+                flattened_path = path.reshape(-1, path.shape[-1])
+                x_coords = [point[0] for point in flattened_path]
+                y_coords = [point[1] for point in flattened_path]
+                ax.plot(x_coords, y_coords, marker='.', linestyle='--',
+                        color='blue', linewidth=0.5, markersize=1, label='Projection path')
+
+            ax.scatter(self.initial_point[0], self.initial_point[1],
+                      color='blue', marker='o', label='Original point', zorder=5)
+            ax.scatter(result.projection[0], result.projection[1],
+                      color='green', marker='*', s=100, label='Projection', zorder=5)
+            
+            ax.legend(fontsize=self.fontsize_legend)
+
+        except (TypeError, ValueError) as e:
+            print(f"Error plotting: {e}")
+
+    def plot_error_comparison(self, ax: Axes) -> None:
+        
+        if (self.result1.squared_errors is None or 
+            self.result2.squared_errors is None):
+            print("Error tracking data not available.")
+            return
+
+        squared_errors1 = self.result1.squared_errors.copy()
+        squared_errors2 = self.result2.squared_errors.copy()
+        stalled_errors1 = self.result1.stalled_errors
+        
+        iterations = np.arange(0, self.max_iter, 1)
+        
+        ax.plot(iterations, squared_errors1, color='#1f77b4', linestyle='-', 
+                marker='^', markersize=4, label=f'{self.solver_name1}')
+        ax.plot(iterations, squared_errors2, color='#ff7f0e', linestyle='-', 
+                marker='s', markersize=4, label=f'{self.solver_name2}')
+        
+        stalled_indices = []
+        if stalled_errors1 is not None:
+            for i in range(len(stalled_errors1)):
+                error = stalled_errors1[i]
+                if error is not None and not (isinstance(error, float) and np.isnan(error)):
+                    error_val = float(error)
+                    rect_width = 0.4
+                    rect_height = error_val * 0.15
+                    rect = Rectangle((i - rect_width/2, error_val - rect_height/2), 
+                                    rect_width, rect_height, 
+                                    alpha=0.3, color='yellow', zorder=1)
+                    ax.add_patch(rect)
+                    stalled_indices.append(i)
+        
+        ax.scatter(self.max_iter - 1, squared_errors1[-1],
+                  color='#1f77b4', marker='*', s=150, zorder=5,
+                  label=f'{self.solver_name1} (final)')
+        ax.scatter(self.max_iter - 1, squared_errors2[-1],
+                  color='#ff7f0e', marker='*', s=150, zorder=5,
+                  label=f'{self.solver_name2} (final)')
+        
+        if stalled_indices:
+            ax.plot([], [], color='yellow', marker='s', linestyle='', markersize=8,
+                   label='Stalling')
+        
+        ax.set_xlabel('Iteration', fontsize=self.fontsize_label)
+        ax.set_ylabel('Squared errors', fontsize=self.fontsize_label)
+        ax.set_title('Error comparison (stalling highlighted)', fontsize=self.fontsize_title)
+        ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
+        ax.grid(True, axis='x', alpha=0.3, which='both')
+        ax.locator_params(axis='y', nbins=5)
+        ax.legend(fontsize=self.fontsize_legend, loc='best')
+
+    def plot_halfspace_comparison(self, ax: Axes) -> None:
+        
+        if (self.result1.active_half_spaces is None or 
+            self.result2.active_half_spaces is None):
+            print("Halfspace activity data not available.")
+            return
+        
+        active_spaces1 = self.result1.active_half_spaces
+        active_spaces2 = self.result2.active_half_spaces
+        
+        if (self.display_halfspace_index >= active_spaces1.shape[0] or
+            self.display_halfspace_index >= active_spaces2.shape[0]):
+            print(f"Halfspace index {self.display_halfspace_index} out of range.")
+            return
+        
+        iterations = np.arange(0, self.max_iter, 1)
+        active_space1 = active_spaces1[self.display_halfspace_index]
+        active_space2 = active_spaces2[self.display_halfspace_index]
+        
+        ax.plot(iterations, active_space1, color='#1f77b4', linestyle='-', 
+                marker='^', linewidth=1.5, markersize=4, 
+                label=f'{self.solver_name1}')
+        ax.plot(iterations, active_space2, color='#ff7f0e', linestyle='-', 
+                marker='s', linewidth=1.5, markersize=4, 
+                label=f'{self.solver_name2}')
+        
+        ax.set_ylim(-0.1, 1.1)
+        ax.set_yticks([0, 1])
+        ax.set_yticklabels(['Inactive', 'Active'], fontsize=self.fontsize_tick)
+        ax.tick_params(axis='x', which='major', labelsize=self.fontsize_tick)
+        ax.set_xlabel('Iteration', fontsize=self.fontsize_label)
+        ax.set_ylabel('Halfspace activity', fontsize=self.fontsize_label)
+        ax.set_title(f'Halfspace {self.display_halfspace_index} activity', fontsize=self.fontsize_title)
+        ax.grid(True, axis='x', alpha=0.3, which='both')
+        ax.legend(fontsize=self.fontsize_legend)
+
+    def visualise(self) -> None:
+        
+        self.fig = plt.figure(figsize=(12, 12))
+        gs = gridspec.GridSpec(3, 1, height_ratios=[4, 3, 3])
+        
+        ax_top = self.fig.add_subplot(gs[0])
+        ax_middle = self.fig.add_subplot(gs[1])
+        ax_bottom = self.fig.add_subplot(gs[2])
+        
+        if ax_top is None or ax_middle is None or ax_bottom is None:
+            print("Failed to create axes.")
+            return
+        
+        self.plot_top_projection(ax_top)
+        self.plot_error_comparison(ax_middle)
+        self.plot_halfspace_comparison(ax_bottom)
+        
+        plt.subplots_adjust(hspace=0.35)
         plt.tight_layout()
         plt.show()
