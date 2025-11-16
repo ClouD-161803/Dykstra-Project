@@ -1,0 +1,9 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+Dykstra's algorithm is a simple yet powerful method for solving the Euclidean BAP on the intersection of convex sets, yet the stalling phenomenon has significantly hindered its practical utility. For time-critical applications, such as the high-frequency MPC controller required for the Diamond Light Source particle accellerator, an algorithm with an unpredictable and arbitrarily long execution time is not viable. In this paper, we have proposed a solution to the stalling problem for the polyhedral case. We first formalised the stalling period (Definition~\ref{def:stalling}) and then derived its exact length in closed-form (Theorem~\ref{thm:nstall}), rendering the stalling period computable \textit{a priori}. Based on this result, we proposed the Stall-Averse Dykstra's Algorithm (Algorithm~\ref{alg:fastforward}). This practical modification detects stalling and uses the result from Theorem~\ref{thm:nstall} to ``fast-forward'' the algorithm's dual variables past the entire stalling period in a single, computationally inexpensive step. As demonstrated by our numerical results in Section~\ref{sec:example}, the modification eliminates the stalling behaviour (Figure~\ref{fig:fastforwarding}). Since the proposed algorithm achieves the same iterates after escaping the stalling period as would be attained with standard Dykstra, the Boyle-Dykstra theorem is retained, thus the iterates are guaranteed to converge to the optimal solution $x^\star$ asymptotically (Corollary~\ref{cor:convergence}).
+Our method ensures the iterates converge faster,
+%and monotonically after half-space discarding,
+which enables practitioners to implement Dykstra's algorithm.
+
+Future work should extend the analysis from polyhedral sets to other common convex sets. ADD MORE HERE
