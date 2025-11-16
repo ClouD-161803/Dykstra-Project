@@ -11,7 +11,7 @@ Dykstra's algorithm is a cyclic projection method used to find the projection of
 - **Standard Dykstra's Algorithm** - Classic cyclic projection implementation
 - **MAP-Dykstra Hybrid** - Combines Method of Alternating Projections with Dykstra for improved performance
 - **Stalling Detection** - Detects and prevents algorithmic stalling (when the algorithm gets stuck cycling)
-- **Interactive Visualization** - 2D visualization of projection paths, half-spaces, and convergence
+- **Interactive Visualisation** - 2D visualisation of projection paths, half-spaces, and convergence
 - **Error Tracking** - Monitors convergence and distance to optimal solution
 - **Rounded Box Support** - Edge-rounding utilities for non-axis-aligned convex regions
 - **Generalised Implementation** - Works for any number of dimensions and half-spaces
@@ -161,6 +161,41 @@ solver = DykstraProjectionSolver(z, A, c_full, max_iter=50)
 result = solver.solve()
 ```
 
+### Example 6: Paper Figure Comparison
+
+Generate a comparison figure showing two different solver variants side-by-side:
+
+```bash
+python paper_figure.py
+```
+
+This script:
+
+1. Runs two solvers on the same problem:
+   - **Dykstra** - Standard Dykstra's algorithm
+   - **Fast Forward** - Dykstra with stalling detection
+2. Exports results to CSV files in `./results/`
+3. Displays a three-panel comparison figure with:
+   - **Top Panel** - Projection visualisation for one solver
+   - **Middle Panel** - Error convergence comparison with stalling highlighted
+   - **Bottom Panel** - Halfspace activity comparison
+
+The visualisation can be customised:
+
+```python
+from visualiser import ComparisonVisualiser
+
+visualiser = ComparisonVisualiser(
+    result1, result2, nc_pairs1, nc_pairs2,
+    max_iter, x_range, y_range,
+    solver1_name, solver2_name,
+    z,
+    display_result_index=0,      # Show first solver's projection (0 or 1)
+    display_halfspace_index=0    # Show first halfspace activity (0, 1, 2, ...)
+)
+visualiser.visualise()
+```
+
 ---
 
 ## Core Modules
@@ -174,17 +209,26 @@ Main solver implementations:
 - `DykstraMapHybridSolver` - Hybrid Method of Alternating Projections with Dykstra
 - `DykstraStallDetectionSolver` - Stalling-aware variant with early termination
 
-### `visualiser.py` and `VerticalVisualiser`
+### `visualiser.py`
 
-Visualisation system for projection results:
+Comprehensive visualisation system for projection results:
 
 - **Visualiser** - Horizontal layout for results
 - **VerticalVisualiser** - Vertical layout for results
-- Displays half-space constraints and their boundaries
-- Shows complete projection paths through iterations
-- Highlights active vs. inactive constraints
-- Renders error evolution and convergence metrics
-- Includes quiver plots for gradient information
+- **ComparisonVisualiser** - Side-by-side comparison of two solver runs with:
+  - Individual projection visualisation
+  - Error convergence comparison with stalling detection
+  - Halfspace activity tracking
+- **ResultExporter** - CSV export/import for solver results with full data serialisation
+
+Displays:
+
+- Half-space constraints and their boundaries
+- Complete projection paths through iterations
+- Active vs. inactive constraints
+- Error evolution and convergence metrics
+- Quiver plots for gradient information
+- Stalling periods highlighted in error convergence plots
 
 ### `gradient.py`
 
@@ -258,14 +302,15 @@ Data structure storing solver outputs:
     |   |
     |   +---Version 1                  (Initial implementation)
     |   +---Version 2                  (Added plotting)
-    |   +---Version 3                  (Path visualization)
+    |   +---Version 3                  (Path visualisation)
     |   +---Version 4                  (Added gradients)
     |   +---Version 5-9                (Iterative improvements)
     |           
     \---Working Version               (✓ CURRENT PRODUCTION CODE)
             main.py                    (🚀 Entry point - run this to test)
+            paper_figure.py            (📊 Generate comparison figure from paper)
             convex_projection_solver.py (Core solver implementations)
-            visualiser.py              (2D visualisation engine)
+            visualiser.py              (2D visualisation engine + result export)
             projection_result.py       (Result data structure)
             gradient.py                (Gradient/optimisation utilities)
             edge_rounder.py            (Box rounding utilities)
