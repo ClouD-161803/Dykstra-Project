@@ -102,14 +102,14 @@ def run() -> None:
 
     # --- Solver Selection ---
     
-    # * Standard Dykstra's Algorithm
-    solver = DykstraProjectionSolver(
-        z, A, c, max_iter,
-        track_error=True,
-        plot_errors=plot_quivers,
-        plot_active_halfspaces=plot_activity,
-        delete_spaces=delete_half_spaces
-    )
+    # # * Standard Dykstra's Algorithm
+    # solver = DykstraProjectionSolver(
+    #     z, A, c, max_iter,
+    #     track_error=True,
+    #     plot_errors=plot_quivers,
+    #     plot_active_halfspaces=plot_activity,
+    #     delete_spaces=delete_half_spaces
+    # )
     
     # # * Hybrid MAP-Dykstra Algorithm
     # solver = DykstraMapHybridSolver(
@@ -120,14 +120,14 @@ def run() -> None:
     #     delete_spaces=delete_half_spaces
     # )
 
-    # # * Dykstra with Stalling Detection
-    # solver = DykstraStallDetectionSolver(
-    #     z, A, c, max_iter,
-    #     track_error=True,
-    #     plot_errors=plot_quivers,
-    #     plot_active_halfspaces=plot_activity,
-    #     delete_spaces=delete_half_spaces
-    # )
+    # * Dykstra with Stalling Detection
+    solver = DykstraStallDetectionSolver(
+        z, A, c, max_iter,
+        track_error=True,
+        plot_errors=plot_quivers,
+        plot_active_halfspaces=plot_activity,
+        delete_spaces=delete_half_spaces
+    )
     
 
     solver_name = solver.__class__.__name__

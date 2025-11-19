@@ -50,7 +50,7 @@ def run() -> None:
     result2 = solver2.solve()
     
     solver1_name = "Dykstra"
-    solver2_name = "Fast Forward"
+    solver2_name = "Algorithm (1)"
     
     output_dir = "./results"
     
@@ -97,7 +97,7 @@ def run() -> None:
         max_iter, x_range, y_range,
         solver1_name, solver2_name,
         z,
-        display_result_index=0,
+        display_result_index=1,
         display_halfspace_index=0
     )
     visualiser.visualise()
