@@ -1,36 +1,30 @@
 \section{Numerical Example} \label{sec:example}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=.9\textwidth]{Latex/Current Version/Figures/Stalling_vertical.png}
-    \caption{Stalling situation. Standard Dykstra's algorithm applied to a line-box example. (Top): The iterates $x_m$ (blue) start at the original point (blue dot) and project onto each of the half-spaces. The path visibly stalls near the left side of the box before converging to the optimal solution (red star). (Middle): The squared error $E(x_m)$ (red) plateaus during the stalling period (yellow), which lasts from iteration 1 until iteration 16, before converging at iteration 30. (Bottom): Half-space activity. The stalling period ends precisely when half-space 0 (black circles), corresponding to the left side of the box, becomes inactive. Half-space 1 (black squares) and half-space 2 (black triangles) correspond to the top of the box and the line, respectively, and remain active.}
-    \label{fig:stalling2}
-\end{figure}
-
 % We demonstrate the efficacy of our method through a numerical experiment. The results of our experiment can be reproduced from the repository: \href{https://github.com/ClouD-161803/Dykstra-Project.git}{ClouD-161803/Dykstra-Project}.
 
-We demonstrate the efficacy of our method through a numerical experiment. The results of our experiment can be reproduced from the repository~\cite{DykstraProjectRepo}. The example we used is the projection of an initial point $x^\circ$ on the intersection of a box and a line in $\mathbb{R}^2$. The box is centered at the origin and can be represented as $[-1, 1] \times [-1, 1]$, and the line passes through the points $[0,1]$ and [-2, 2]. This configuration was first described in detail in~\cite{DYKSTRASTALLING}. The initial point was set to $x^\circ = [-4, 1.4]$ to induce the stalling period, and the ground-truth optimal solution $x^\star$ was computed using the interior-point CQP solver \texttt{quadprog} to serve as a benchmark for error calculations. The convergence behaviour of our proposed algorithm was then monitored via the $\ell_2$ norm of the absolute distance to optimality,
-\begin{align}
-E(x_m) \eqdef \ell_2(x_m - x^\star) = \| x_m - x^\star \|_2^2.
-\end{align}
-Half-space activity was monitored by verifying~\eqref{eq:sets_i} for each set at each iteration, and we encoded the status of each half space using an indicator function
-\[
-\mathcal{I}_{\mathcal{H}_i}(x) \eqdef
-\begin{cases}
-1 & \text{if } x \in \mathcal{H}_i, \\
-0 & \text{if } x \notin \mathcal{H}_i.
-\end{cases}
-\]
-The stalling situation using standard Dykstra is illustrated in Figure~\ref{fig:stalling2}. The iterates $x_m$ are shown in the top plot, the errors $E(x_m)$ in the middle plot and the convergence activity of each of the three initially active half-spaces $\mathcal{I}_{\mathcal{H}_i}(x), i = 0,\dots,2$ (top and left-most half-spaces of the box, and bottom half-space of the line) in the bottom plot. Half-space 0 corresponds to the left side of the box, half-space 1 to the top side of the box, and half-space 2 to the line (with down-facing normal). In Figure~\ref{fig:stalling2}, the algorithm stalls until iteration 16. From the third plot, it can be seen that the stalling period extends until half-space 0 becomes inactive.
+We demonstrate the efficacy of our method through a numerical experiment. The results of our experiment can be reproduced from the repository~\cite{DykstraProjectRepo}. The example we used is the projection of an initial point $x^\circ$ on the intersection of a box and a line in $\mathbb{R}^2$. The box is centered at the origin and can be represented as $[-1, 1] \times [-1, 1]$, and the line passes through the points $(0,1)$ and $(-2, 2)$. This configuration was first described in detail in~\cite{DYKSTRASTALLING}. The initial point was set to $x^\circ = (-4, 1.4)$ to induce the stalling period, and the ground-truth optimal solution $x^\star$ was computed using the interior-point CQP solver \texttt{quadprog} to serve as a benchmark for error calculations. Half-space activity was monitored by verifying~\eqref{eq:sets_i} for each set at each iteration, and the convergence behaviour monitored via the $\ell_2$ norm of the absolute distance to optimality, $E(x_m) \eqdef \| x_m - x^\star \|_2^2$.
+% \begin{align}
+% E(x_m) \eqdef \| x_m - x^\star \|_2^2.
+% \end{align}
+% Half-space activity was monitored by verifying~\eqref{eq:sets_i} for each set at each iteration, and we encoded the status of each half space using an indicator function
+% \[
+% \mathcal{I}_{\mathcal{H}_i}(x) \eqdef
+% \begin{cases}
+% 1 & \text{if } x \in \mathcal{H}_i, \\
+% 0 & \text{if } x \notin \mathcal{H}_i.
+% \end{cases}
+% \]
 
-Figure~\ref{fig:fastforwarding} illustrates the application of our modified method, using Algorithm~\ref{alg:fastforward}, to the same example, effectively resolving the stalling issue. In Figure~\ref{fig:fastforwarding}, stalling is detected at iteration 1, upon which the algorithm is fast-forwarded using $N_{stall}=15$ iterations, where $N_{stall}$ is computed using Theorem~\ref{thm:nstall}. At iteration 3, the iterates of the modified algorithm arrive where the iterates of the original algorithm arrive at iteration 16. The iterates of the modified algorithm then become identical to those of the original algorithm. It is evident that the modified method achieves superior convergence characteristics when compared to standard Dykstra's algorithm. Although this section has showcased a resolution for a simple example in $p = 2$ dimensions with only three active half-spaces, the results of Theorem~\ref{thm:nstall} and Algorithm~\ref{alg:fastforward} will hold in any number of dimensions and for an arbitrary number of half-spaces.
+The results are shown in Fig.~\ref{fig:stalling2} for both Dykstra's method and Algorithm~\ref{alg:fastforward}. The iterates $x_m$ are shown in the top plot, the errors $E(x_m)$ in the middle plot and the activity of the half space corresponding to the left side of the box in the bottom plot. Note that the sequence of iterates $x_m$ generated by Dykstra's method and Algorithm~\ref{alg:fastforward} are identical, so they cannot be distinguished in the top plot. However, the error indicates that Dykstra's algorithm is stalling up to cycle 16 ($m\times n$), with the stalling trajectory highlighted in red in the top plot. The half space activity shows that stalling ends when the half space corresponding to the left side of the box becomes inactive.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=.9\textwidth]{Latex/Current Version/Figures/No_stalling_vertical.png}
-    \caption{Modified algorithm with fast-forwarding. (Top): Stalling is detected at iteration 1. The algorithm computes $N_{stall}=15$ using Theorem~\ref{thm:nstall} and ``fast-forwards" the iterates, jumping directly to the point where the standard algorithm would have been at iteration 16. Asymptotic convergence follows from iteration 2 onwards. (Middle): The stalling period (yellow) is eliminated. The algorithm ``converges" (green) at iteration 16. (Bottom): Half-space 0 (black circles) becomes inactive immediately after the fast-forward step.}
-    \label{fig:fastforwarding}
-\end{figure}
+The middle and bottom plot of Figure~\ref{fig:stalling2} illustrate the application of Algorithm~\ref{alg:fastforward} to the same example, effectively resolving the stalling issue. In Fig.~\ref{fig:stalling2}, stalling is detected at cycle 1, upon which the algorithm is fast-forwarded using $N_{stall}=15$ cycles, where $N_{stall}$ is computed using Thm.~\ref{thm:nstall}. At cycle 2, the iterates of the modified algorithm arrive where the iterates of the original algorithm arrive at iteration 16. The iterates of the modified algorithm then become identical to those of the original algorithm. It is evident that the modified method achieves superior convergence characteristics when compared to standard Dykstra's algorithm. Although this section has showcased a resolution for a simple example in $p = 2$ dimensions with only three active half-spaces, the results of Thm.~\ref{thm:nstall} and Algorithm~\ref{alg:fastforward} will hold in any number of dimensions and for an arbitrary number of half-spaces.
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=.9\textwidth]{Latex/Current Version/Figures/No_stalling_vertical.png}
+%     \caption{Modified algorithm with fast-forwarding. (Top): Stalling is detected at iteration 1. The algorithm computes $N_{stall}=15$ using Theorem~\ref{thm:nstall} and ``fast-forwards" the iterates, jumping directly to the point where the standard algorithm would have been at iteration 16. Asymptotic convergence follows from iteration 2 onwards. (Middle): The stalling period (yellow) is eliminated. The algorithm ``converges" (green) at iteration 16. (Bottom): Half-space 0 (black circles) becomes inactive immediately after the fast-forward step.}
+%     \label{fig:fastforwarding}
+% \end{figure}
 
 % \begin{figure}
 %     \centering
@@ -49,3 +43,113 @@ Figure~\ref{fig:fastforwarding} illustrates the application of our modified meth
 %     \caption{Dykstra's algorithm applied to a line-box example. The first column illustrates the trajectories of the iterates and their distance to the Euclidean projection computed using an interior point method. The second column shows the half-space activity, where half-space 0 corresponds to the left side of the box, half-space 1 to the top side of the box, and half-space 0 to the line (down-facing normal).}
 %     \label{fig:stallingfixed}
 % \end{figure}
+
+\definecolor{legreddraw}{HTML}{E41A1C}
+\definecolor{legbluedraw}{HTML}{377EB8}
+\definecolor{leggreendraw}{HTML}{4DAF4A}
+\definecolor{legredfill}{HTML}{B61516}
+\definecolor{legbluefill}{HTML}{2C6593}
+\definecolor{leggreenfill}{HTML}{3E8C3B}
+
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=.9\textwidth]{Latex/Current Version/Figures/Stalling_vertical.png}
+\begin{tikzpicture}
+  % Top axis
+  \begin{axis}[
+    at={(0,0)},
+    anchor=north west,
+    width=0.8\linewidth,
+    height=4cm,
+    xmin=-4, xmax=1,
+    ymin=0.5, ymax=1.5,
+    xlabel={$x$ coordinate},
+    ylabel={$y$ coordinate},
+    grid=both,legend style={fill=white,fill opacity=0.4,text opacity=1,draw=black,cells={anchor=west}},
+    legend pos=south west, legend columns=3, transpose legend,
+  ]
+    \draw[fill=legbluefill, fill opacity=0.2, draw=legbluedraw]
+        (axis cs: -1,0.5) rectangle (axis cs: 1,1);
+    \addlegendimage{area legend,fill=legbluefill,fill opacity=0.2,draw=legbluedraw}
+    \addlegendentry{Box}
+
+    \draw[very thick, legbluedraw] (axis cs:-2,2) -- (axis cs:1,0.5);
+    \addlegendimage{line legend,very thick, draw=legbluedraw}
+    \addlegendentry{Line}
+    
+    \draw[line width=2, legredfill!30, line join=round] (axis cs:-1,1.4) -- (axis cs:-0.8,1.4) -- (axis cs:-1,1) -- (axis cs:-1,1.4);
+    \addlegendimage{line legend,line width=2, draw=legredfill!30}
+    \addlegendentry{Stalling}
+        
+    \addplot[
+        black,
+        thin, densely dotted, line cap= round,
+        mark=*, mark size = 0.75, line join=round,
+    ] table[x=x, y=y, col sep=comma] {data_iterates.csv};
+    \addlegendentry{Iterates $x_m$}
+
+    \addplot[
+    orange,
+    only marks,
+    mark=star,
+    mark size=2.5,
+    ] coordinates {(0, 1)};
+    \addlegendentry{Projection $x^\star$}
+
+  \end{axis}
+
+  % Middle axis
+  \begin{axis}[
+    at={(0,-3.75cm)},
+    anchor=north west,
+    width=0.8\linewidth,
+    height=4cm,
+    xmin=0, xmax=30,
+    ymode=log,
+    ylabel={Squared error},
+    xlabel={Cycle},
+    grid=both,
+    legend pos=south west,
+    legend style={fill=white,fill opacity=0.4,text opacity=1,draw=black,cells={anchor=west}},
+    legend entries={Original, Algorithm~\ref{alg:fastforward}},
+  ]
+    \addplot[
+        black,
+        thick,
+        mark=*, mark size= 1,
+    ] table[x expr=\thisrow{iteration} + 1, y=error, col sep=comma] {data_dykstra_original.csv};
+    \addplot[
+        leggreendraw,
+        thick,
+        mark=x, mark size= 2,
+    ] table[x expr=\thisrow{iteration} + 1, y=error, col sep=comma] {data_dykstra_modified.csv};
+  \end{axis}
+
+  % Bottom axis
+  \begin{axis}[
+    at={(0,-7.5cm)},
+    anchor=north west,
+    width=0.8\linewidth,
+    height=4cm,
+    xmin=0, xmax=30,
+    ylabel={Halfspace activity},
+    xlabel={Cycle},ytick={0,1},
+    grid=both,
+    legend style={fill=white,fill opacity=0.4,text opacity=1,draw=black,cells={anchor=west}},
+    legend entries={Original, Algorithm~\ref{alg:fastforward}},
+  ]
+    \addplot[
+        black,
+        thick,
+        mark=*, mark size= 1,
+    ] table[x expr=\thisrow{iteration} + 1, y=halfspace, col sep=comma] {data_dykstra_original.csv};
+    \addplot[
+        leggreendraw,
+        thick,
+        mark=x, mark size= 2,
+    ] table[x expr=\thisrow{iteration} + 1, y=halfspace, col sep=comma] {data_dykstra_modified.csv};
+  \end{axis}
+\end{tikzpicture}
+    \caption{Dykstra's projection algorithm and Algorithm~\ref{alg:fastforward} applied to the line-box example from~\cite{BAUSCHKESWISS}. Top: The iterates $x_m$ of the algorithms with stalling of Dykstra's method highlighted in red. Middle: Squared errors $E(x_m)$. (Bottom): Activity of the vertical half space (left side of the box). The stalling period ends when this half space becomes inactive.}
+    \label{fig:stalling2}
+\end{figure}
