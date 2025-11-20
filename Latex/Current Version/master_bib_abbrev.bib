@@ -1,7 +1,7 @@
 % This file was created with JabRef 2.10.
 % Encoding: UTF-8
 @article{KEMPF20206542,
-title = {Fast Gradient Method for Model Predictive Control with Input Rate and Amplitude Constraints⁎⁎This research is supported by the Engineering and Physical Sciences Research Council (EPSRC) with a Diamond CASE studentship.},
+title = {Fast Gradient Method for Model Predictive Control with Input Rate and Amplitude Constraints.},
 journal = {IFAC-PapersOnLine},
 volume = {53},
 number = {2},
@@ -11,7 +11,7 @@ note = {21st IFAC World Congress},
 issn = {2405-8963},
 doi = {https://doi.org/10.1016/j.ifacol.2020.12.070},
 url = {https://www.sciencedirect.com/science/article/pii/S2405896320303268},
-author = {Idris Kempf and Paul Goulart and Stephen Duncan},
+author = {I. Kempf and P. Goulart and S. Duncan},
 keywords = {Model Predictive Control (MPC), Fast Gradient Method, Dykstra’s Method, Alternating Direction of Multipliers Method (ADMM), Projection, Rate Constraints},
 abstract = {This paper is concerned with the computing efficiency of model predictive control (MPC) problems for dynamical systems with both rate and amplitude constraints on the inputs. Instead of augmenting the decision variables of the underlying finite-horizon optimal control problem to accommodate the input rate constraints, we propose to solve this problem using the fast gradient method, where the projection step is solved using Dykstra’s algorithm. We show that, relative to the Alternating Direction of Method Multipliers (ADMM), this approach greatly reduces the computation time while halving the memory usage. Our algorithm is implemented in C and its performance demonstrated using several examples.}
 }
@@ -53,11 +53,13 @@ M. Popkiss and P. Quinn and R. Rambo and G. Rehm and A. Rose and K.J. Sawhney an
 
 @Book{BAUSCHKEBOOK,
   Title                    = {Convex Analysis and Monotone Operator Theory in {Hilbert} Space},
-  Author                   = {Bauschke, Heinz and Combettes, Patrick},
+  Author                   = {H. Bauschke and P. Combettes},
   Publisher                = {Springer},
   Year                     = {2011},
   Month                    = {January},
-
+  DOI                      = {10.1007/978-3-319-48311-5},
+  ISBN         = {978-1461400385},
+  Edition = {1},
   Owner                    = {idris},
   Pages                    = {468},
   Timestamp                = {2019.11.03}
@@ -66,10 +68,11 @@ M. Popkiss and P. Quinn and R. Rambo and G. Rehm and A. Rose and K.J. Sawhney an
 @Article{BAUSCHKESWISS,
   Title                    = {Projection Methods: Swiss Army Knives for Solving Feasibility and Best
 Approximation Problems with Halfspaces},
-  Author                   = {Bauschke, Heinz and Koch, Valentin},
+  Author                   = {H. Bauschke and V. Koch},
   Journal                  = {ArXiv e-prints},
   Year                     = {2013},
-
+  
+  Eprint       = {1301.4506},
   Month                    = {January},
 
   Archiveprefix            = {arXiv},
@@ -80,14 +83,25 @@ Approximation Problems with Halfspaces},
 @Article{DYKSTRASTALLING,
   Title                    = {On {Dykstra’s} algorithm: finite convergence, stalling, and the method of alternating projections},
   Author                   = {H. H. Bauschke and R. S. Burachik and D. B. Herman and C. Y. Kaya},
-  Journal                  = {ArXiv e-prints},
+  Journal                  = {Optimization Letters},
+  volume={14},
+  number={8},
+  pages={1975--1987},
+  DOI = {10.1007/s11590-020-01600-4},
   Year                     = {2020},
-
-  Month                    = {January},
-  Pages                    = {1--14},
-
   Owner                    = {idris},
-  Timestamp                = {2022.02.15}
+  Timestamp                = {2025.11.20}
+}
+
+@article{bauschke2020dykstra,
+  title={On Dykstra’s algorithm: finite convergence, stalling, and the method of alternating projections},
+  author={Bauschke, Heinz H and Burachik, Regina S and Herman, Daniel B and Kaya, C Yal{\c{c}}{\i}n},
+  journal={Optimization Letters},
+  volume={14},
+  number={8},
+  pages={1975--1987},
+  year={2020},
+  publisher={Springer}
 }
 
 @InProceedings{BELTRAN,
@@ -215,7 +229,9 @@ Approximation Problems with Halfspaces},
   Author                   = {Boyd, S. and Vandenberghe, L.},
   Publisher                = {{Cambridge University Press}},
   Year                     = {2004},
-
+  DOI                      ={10.1017/CBO9780511804441},
+  ISBN         = {978-0521833783},
+  Edition = {1},
   Owner                    = {idris},
   Priority                 = {4},
   Timestamp                = {2006-04-12T21:13:14.000+0200}
@@ -228,6 +244,7 @@ Approximation Problems with Halfspaces},
   Year                     = {1986},
   Pages                    = {28--47},
   Publisher                = {Springer New York},
+  DOI = {10.1007/978-1-4613-9940-7_3},
 
   Owner                    = {idris},
   Timestamp                = {2020.04.13}
@@ -561,6 +578,7 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
   Number                   = {6},
   Pages                    = {537--565},
   Volume                   = {15},
+  DOI = {10.1080/01630569408816580},
 
   Owner                    = {idris},
   Timestamp                = {2021.07.15}
@@ -1184,6 +1202,7 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
   Number                   = {1},
   Pages                    = {37--51},
   Volume                   = {47},
+  DOI = {10.1007/BF01580851},
 
   Owner                    = {idris},
   Timestamp                = {2022.02.15}
@@ -1593,7 +1612,8 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
   Publisher                = {Springer Science \& Business Media},
   Year                     = {2003},
   Series                   = {Applied Optimization},
-
+  DOI = {10.1007/978-1-4419-8853-9},
+  Edition = {1},
   Owner                    = {idris},
   Timestamp                = {2019.07.18}
 }
@@ -1679,18 +1699,19 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
 }
 
 @Article{DYKSTRAPERKINS,
-  Title                    = {A CONVERGENCE ANALYSIS OF {Dykstra's} ALGORITHM FOR POLYHEDRAL SETS},
+  Title                    = {A Convergence Analysis of {Dykstra's} Algorithm for Polyhedral Sets},
   Author                   = {C. Perkins},
-  Journal                  = {SIAM J. Numer. Anal.},
+  Journal                  = {SIAM Journal on Numerical Analysis},
   Year                     = {2002},
 
   Month                    = {July},
   Number                   = {2},
-  Pages                    = {732--804},
+  Pages                    = {792--804},
   Volume                   = {40},
-
+  Doi = {10.1137/S0036142900367557},
   Owner                    = {idris},
-  Timestamp                = {2022.02.15}
+  Timestamp                = {2022.02.15},
+  Abstract = { Let H be a nonempty closed convex set in a Hilbert space X determined by the intersection of a finite number of closed half spaces. It is well known that given an \$x\_0 \in X\$, Dykstra's algorithm applied to this collection of closed half spaces generates a sequence of iterates that converge to PH(x0 ), the orthogonal projection of x0 onto H. The iterates, however, do not necessarily lie in H. We propose a combined Dykstra--conjugate-gradient method such that, given an \$\varepsilon > 0\$, the algorithm computes an \$x \in H\$ with \$\|x - P\_H(x\_0)\| < \varepsilon\$. Moreover, for each iterate xm of Dykstra's algorithm we calculate a bound for \$\|x\_m - P\_H(x\_0)\|\$ that approaches zero as m tends to infinity. Applications are made to computing bounds for \$\|x\_m - P\_H(x\_0)\|\$ where H is a polyhedral cone. Numerical results are presented from a sample isotone regression problem. }
 }
 
 @InProceedings{PLOUVIER,
@@ -1945,6 +1966,19 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
   Timestamp                = {2019.02.15}
 }
 
+@article{ocpb:16,
+    author       = {B. O'Donoghue and E. Chu and N. Parikh and S. Boyd},
+    title        = {Conic Optimization via Operator Splitting and Homogeneous Self-Dual Embedding},
+    journal      = {Journal of Optimization Theory and Applications},
+    month        = {June},
+    year         = {2016},
+    volume       = {169},
+    number       = {3},
+    pages        = {1042-1068},
+    doi = {10.1007/s10957-016-0892-3},
+    url          = {http://stanford.edu/~boyd/papers/scs.html},
+}
+
 @TechReport{STEINHAGEN,
   Title                    = {{Real-time feedback on beam parameters}},
   Author                   = {Steinhagen, R J},
@@ -1954,6 +1988,18 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
 
   Owner                    = {idris},
   Timestamp                = {2019.07.15}
+}
+
+@article{osqp,
+  author  = {Stellato, B. and Banjac, G. and Goulart, P. and Bemporad, A. and Boyd, S.},
+  title   = {{OSQP}: an operator splitting solver for quadratic programs},
+  journal = {Mathematical Programming Computation},
+  year    = {2020},
+  volume  = {12},
+  number  = {4},
+  pages   = {637--672},
+  doi     = {10.1007/s12532-020-00179-2},
+  url     = {https://doi.org/10.1007/s12532-020-00179-2},
 }
 
 @Article{OSQPMAIN,
@@ -2092,7 +2138,7 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
   Year                     = {1951},
   Number                   = {Bd. 2},
   Series                   = {Annals of Mathematics Studies},
-
+  DOI = {10.1515/9781400882250},
   ISBN                     = {9780691095790},
   Owner                    = {idris},
   Timestamp                = {2019.11.05}
@@ -2279,6 +2325,7 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
   Number                   = {3},
   Pages                    = {415--433},
   Volume                   = {93},
+  DOI = {10.1006/jath.1998.3174},
 
   Owner                    = {idris},
   Timestamp                = {2022.02.15}
@@ -2376,13 +2423,12 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
 
 @Article{BREGMAN1965,
   Title                    = {The method of projections for finding the common point of convex sets},
-  Author                   = {Bregman, L.M.},
-  Journal                  = {Sov. Math. Dokl.},
+  Author                   = {Bregman, L. M.},
+  Journal                  = {Soviet Mathematics Doklady},
   Year                     = {1965},
-
+  
   Pages                    = {688-692},
   Volume                   = {6},
-
   Owner                    = {idris},
   Timestamp                = {2024.09.09}
 }
@@ -2398,9 +2444,6 @@ Diese Arbeit soll zeigen, wie die wichtigen Probleme der Theorie linearer System
   Timestamp                = {2024.09.18}
 }
 
-ON A CONVEX SET WITH NONDIFFERENTIABLE
-METRIC PROJECTION
-
 @article{GAFFKE1989,
   author    = {Gaffke, N. and Mathar, R.},
   title     = {A cyclic projection algorithm via duality},
@@ -2413,7 +2456,7 @@ METRIC PROJECTION
 }
 
 @article{BOYDADMM,
-  author    = {Boyd, Stephen and Parikh, Neal and Chu, Eric and Peleato, Borja and Eckstein, Jonathan},
+  author    = {S. Boyd and N. Parikh and E. Chu and B. Peleato and J. Eckstein},
   title     = {Distributed Optimization and Statistical Learning via the Alternating Direction Method of Multipliers},
   journal   = {Foundations and Trends® in Machine Learning},
   year      = {2011},
@@ -2424,7 +2467,7 @@ METRIC PROJECTION
 }
 
 @incollection{GABAY1983,
-  author    = {Gabay, Daniel},
+  author    = {D. Gabay},
   title     = {Applications of the method of multipliers to variational inequalities},
   booktitle = {Augmented Lagrangian Methods: Applications to the Numerical Solution of Boundary-Value Problems},
   editor    = {Fortin, M. and Glowinski, R.},
@@ -2435,8 +2478,8 @@ METRIC PROJECTION
 }
 
 @misc{DykstraProjectRepo,
-  author = {Vestini, Claudio and Kempf, Idris},
-  title  = {{Dykstra-Project}: Code for "Stalling Fast Forwarding for Dykstra's Algorithm"},
+  author = {C. Vestini and I. Kempf},
+  title  = {{Dykstra-Project}: Repository for "Fast-Forwarding Stalling in Dykstra's Algorithm"},
   year   = {2025},
   publisher = {GitHub},
   howpublished = {\url{https://github.com/ClouD-161803/Dykstra-Project.git}}
