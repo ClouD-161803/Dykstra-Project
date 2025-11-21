@@ -63,7 +63,12 @@
 \usepackage{xcolor}
 
 \definecolor{commentgrey}{gray}{0.6}
-\newcommand{\algcomment}[1]{\scriptsize\textcolor{commentgrey}{\Comment{#1}}}
+% This ensures lines with comments do not shrink
+\newcommand{\algcomment}[1]{%
+  \hfill\mbox{}\Comment{\textcolor{commentgrey}{#1}}%
+}
+% OLD COMMAND
+% \newcommand{\algcomment}[1]{\scriptsize\textcolor{commentgrey}{\Comment{#1}}}
 
 %-------------------------------------------------------------
 % 7. THEOREM-LIKE ENVIRONMENTS
@@ -100,7 +105,7 @@
 \newcommand{\twonorm}[1]{\left\| #1 \right\|_2}
 \newcommand{\set}[2]{\left\{ #1 \;\middle|\; #2 \right\}}
 \newcommand{\inR}[3]{#1 \in \Rset^{#2 \times #3}}
-\newcommand{\trans}[1]{#1^\top}
+\newcommand{\trans}[1]{#1^\top} % we do not use this, ^T instead
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % END CUSTOM INCLUDES & DEFINITIONS

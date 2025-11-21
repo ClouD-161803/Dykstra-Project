@@ -1,14 +1,14 @@
-\section{Main Result}
+\section{Main result}
 \label{sec:main_result}
 
 % Based on the discussion of stalling in~\cite{DYKSTRASTALLING}, we identify as a necessary condition for stalling of the iterates for successive iteration cycles over $n$ sets. This is formalised in Definition~\ref{def:stalling}.
-Based on the discussion of stalling in~\cite{DYKSTRASTALLING}, we formalise stalling in Definition~\ref{def:stalling}.
+Based on the discussion of stalling in~\cite{DYKSTRASTALLING}, we formalise the stalling condition in Definition~\ref{def:stalling}.
 
 \begin{defn}[Stalling]\label{def:stalling}
 Given $m\geq n-1$, a stalling period is defined as those $i\in\lbrace 0,\dots,N_{stall}\rbrace$ with $N_{stall}\geq n$ for which $x_{m+i}=x_{m+i-n}$.
 \end{defn}
 
-During stalling, only the auxiliary variables $e_{m+i}$ change, which are modified by constant increments $x_m-x_{m+1}$. The stalling period therefore continues until $e_{m+i}$ becomes such that $x_{m+i}+e_{m-n+i}\in\mathcal{H}_{[m+i]}$ for some $[m]$. For polyhedral sets, the length of the stalling period can be pre-computed as soon as the algorithm encounters stalling, using the half-spaces that are active at this iteration. The stalling period continues until one of these half-spaces becomes inactive, at which point stalling terminates. This is formalised in Theorem~\ref{thm:nstall}.
+During stalling, the primary variables $x_{m+i}$ remain constant, and only the auxiliary variables $e_{m+i}$ change: these are modified by constant increments $x_m-x_{m+1}$. The stalling period therefore continues until the auxiliary variable $e_{m+i}$ becomes such that $x_{m+i}+e_{m-n+i}\in\mathcal{H}_{[m+i]}$ for some $[m]$, i.e. the half-space associated with stalling becomes inactive. For polyhedral sets, the length of the stalling period can be pre-computed as soon as the algorithm encounters stalling, using the half-spaces that are active at this iteration. The stalling period continues until one of these half-spaces becomes inactive, at which point stalling terminates. This is formalised in Theorem~\ref{thm:nstall}.
 
 \begin{thm}[Length of Stalling Period]\label{thm:nstall}
 Suppose that stalling starts at iteration $m$ as in Definition~\ref{def:stalling} and denote the active half-spaces by $\mathcal{A}\coloneqq\set{i\in\lbrace 0,\dots,n-1\rbrace}{x_{m+i}+e_{m-n+i}\not\in\mathcal{H}_{[m+i]}}$. The length of the stalling period is
@@ -19,22 +19,13 @@ where $\lceil\cdot\rceil$ is the ceiling operator, $k_{m-n+i}=e_{m-n+i}^T f_{[m+
 \end{thm}
 
 \begin{pf}
-Note that the existence of a finite number $N_{stall}$ is a consequence of the Boyle-Dykstra theorem. According to~\eqref{eq:dykstra:proj:poly}, the stalling period will terminate once an active half-space becomes inactive, i.e.\ $x_{m+i}+e_{m-n+i}\in\mathcal{H}_{[m+i]}$ for some $i\geq n$ (Definition~\ref{def:stalling}). According to~\eqref{eq:km}, the only half-spaces that can become inactive are those for which $x_{m+i}^T f_{[m+i]} - c_{[m+i]} < 0$, which is, by Definition~\ref{def:stalling}, a constant during stalling. The length of the stalling period can therefore be obtained from choosing the smallest possible integer $N_i$ for which
+Note that the existence of a finite number $N_{stall}$ is a consequence of the Boyle-Dykstra theorem. Following the condition in~\eqref{eq:dykstra:proj:poly}, the stalling period will terminate once an active half-space becomes inactive, i.e.\ $x_{m+i}+e_{m-n+i}\in\mathcal{H}_{[m+i]}$ for some half-space index $i\geq n$ (Definition~\ref{def:stalling}). As a consequence of the scalar update in~\eqref{eq:km}, the only half-spaces that can become inactive are those for which the quantity $x_{m+i}^T f_{[m+i]} - c_{[m+i]}$---which is, by Definition~\ref{def:stalling}, a constant during stalling---is negative. The length of the stalling period can therefore be obtained from choosing the smallest possible integer $N_i$ for which
 \begin{align*}
 k_{m-n+i}+N_i\left(x_{m+i}^T f_{[m+i]} - c_{[m+i]}\right) < 0,\qquad i\in\mathcal{A},
 \end{align*}
-so that $N_i=\left\lceil k_{m-n+i} / \left(c_{[m+i]}-x_{m+i}^T f_{[m+i]}\right)\right\rceil$, $N_{stall}=\min_{i\in\mathcal{S}}N_i$, and $i_{stall}=\argmin_{i\in\mathcal{S}} N_i$. If multiple $i_1<\dots<i_j$ are such that $N_{i_1}=\dots = N_{i_j}$, then according to~\eqref{eq:dykstra}, half-space $i_{stall}:= i_1$ is discarded first.\qed
+so that $N_i=\left\lceil k_{m-n+i} / \left(c_{[m+i]}-x_{m+i}^T f_{[m+i]}\right)\right\rceil$, $N_{stall}=\min_{i\in\mathcal{S}}N_i$, and $i_{stall}=\Argmin_{i\in\mathcal{S}} N_i$. If multiple $i_1<\dots<i_j$ are such that $N_{i_1}=\dots = N_{i_j}$, then according to~\eqref{eq:dykstra}, half-space at index $i_{stall}:= i_1$ is discarded first.\qed
 \end{pf}
-Note that $N_{stall}$ in Theorem~\ref{thm:nstall} refers to the number of $n$-step cycles of~\eqref{eq:dykstra} to skip. Following the end of the stalling period, one half-space is discarded from the active half-space and $\mathcal{A}$ redefined, upon which the algorithm may again encounter a stalling condition. By Theorem~\ref{thm:nstall}, the stalling period can be fast-forwarded by applying constant increments to $k_{m+i}$ for $i=0,\dots,N_{stall}$.
-
-Theorem~\ref{thm:nstall} and Dykstra's algorithm can be combined as in Algorithm~\ref{alg:fastforward}. The algorithm proceeds identically to the standard Dykstra's algorithm until it detects stalling by verifying the stationarity condition $x_m = x_{m-n}$ for all half spaces, as per Definition~\ref{def:stalling}. Once stalling is detected at iteration $m$, the algorithm executes its fast-forwarding phase. After performing the standard variable update for the current iteration, it computes the exact number of required stalling iterations, $N_{stall}$, and the half-space at which stalling ends, $i_{stall}$, by calling a function that implements Thm.~\ref{thm:nstall}, determining the number of full $n$-step cycles to skip. For each of the $n$ auxiliary variables $e_j$, the algorithm then computes the constant increment $\Delta e_j = (\trans{f_j} x_{\text{stall}} - c_j)f_j$ and applies a single update: $e_j \leftarrow e_j + N_{\text{skip}} \Delta e_j$, where $N_{\text{skip}}=N_{\text{stall}}$ if $i_{\text{stall}}\geq j$ and $N_{\text{skip}}=N_{\text{stall}}-1$ otherwise. This ``jumps'' the dual variables forward to their state following the stalling period. Finally, the main iteration counter $m$ is adjusted. In this implementation, Algorithm~\ref{alg:fastforward} is executed for a fixed number of iterations, and technical details such as updating the set of active half spaces \textit{a priori} and throughout the algorithm were omitted.
-
-Since the proposed algorithm achieves the same iterates after escaping the stalling period (lines \ref{alg:start}--\ref{alg:end}) as would be attained with Dykstra's method, the Boyle-Dykstra theorem~\cite{DYKSTRA} is retained and the iterates are guaranteed to converge to the optimal solution $x^\star$ asymptotically. This is formalised in Corollary~\ref{cor:convergence} below.
-
-\begin{cor}[Convergence of Algorithm~\ref{alg:fastforward}~\cite{DYKSTRA}]
-\label{cor:convergence}
-The sequence of iterates $\{x_m\}$ generated by Algorithm~\ref{alg:fastforward} converges asymptotically to the optimal solution $x^\star = \mathcal{P}_{\mathcal{H}}(x^\circ)$, i.e. $\lim_{m\rightarrow\infty}\|x_m-x^\star\|_2=0$.
-\end{cor}
+Note that $N_{stall}$ in Theorem~\ref{thm:nstall} refers to the number of $n$-step cycles of~\eqref{eq:dykstra} to skip. Following the end of the stalling period, one half-space is discarded from the active half-space and $\mathcal{A}$ redefined, upon which the algorithm may again encounter a stalling condition. By Theorem~\ref{thm:nstall}, the stalling period can be fast-forwarded by applying constant increments to $k_{m+i}$ for $i=0,\dots,N_{stall}$. Theorem~\ref{thm:nstall} and Dykstra's algorithm are combined in Algorithm~\ref{alg:fastforward}.
 
 \algnewcommand\Inputs{\item[\textbf{Inputs:}]}
 \algnewcommand\Outputs{\item[\textbf{Output:}]}
@@ -43,7 +34,6 @@ The sequence of iterates $\{x_m\}$ generated by Algorithm~\ref{alg:fastforward} 
 \caption{Dykstra's projection algorithm for polyhedral sets with fast forwarding.}
 \label{alg:fastforward}
 \begin{algorithmic}[1]
-    %\Function{DykstraFastForward}{$x^\circ, \{f_i, c_i\}_{i=0}^{n-1}, N_{\max}, \epsilon_{\text{stall}}$}
     \Inputs $x^\circ, \{f_i, c_i\}_{i=0}^{n-1}, N_{\max}, \epsilon_{\text{stall}}$
     \Outputs projection $x_m$
         \State $x \leftarrow x^\circ$; $e_j \leftarrow 0\,\forall j\in\lbrace 0,\dots,n-1\rbrace$;  $m \leftarrow 0$ 
@@ -51,11 +41,11 @@ The sequence of iterates $\{x_m\}$ generated by Algorithm~\ref{alg:fastforward} 
         \While{$m < N_{\max}$}
             \State $x_{m+1} \leftarrow \mathcal{P}_{[m]}(x_m + e_{[m-n]})$
             \State $e_{m} \leftarrow e_{m-n} + x_m - x_{m+1}$
-            \If{$m \ge n-1 \wedge \twonorm{x_{m+1-i} - x_{m+1-i-n}} < \epsilon_{\text{stall}}\,\forall i\in\lbrace 0,\dots,n-1\rbrace$}\label{alg:start} \algcomment{Stalling detected per Definition~\ref{def:stalling}}
-                \State Obtain $N_{stall}$ and $i_{stall}$ from Thm.~\ref{thm:nstall}
+            \If{$m \ge n-1 \;\textbf{and}\;\twonorm{x_{m+1-i} - x_{m+1-i-n}} < \epsilon_{\text{stall}}\;\forall i\in\{0,\dots,n-1\}$}\label{alg:start} \algcomment{Stalling detected per Definition~\ref{def:stalling}}
+                \State Obtain $N_{stall}$ and $i_{stall}$ from Theorem~\ref{thm:nstall}
                 \For{$j \in \lbrace 0,\dots,n-1\rbrace$}
                     \State $N_{skip}\leftarrow N_{stall}$ \textbf{if} $[m-j]\leq i_{stall}$ \textbf{else} $N_{stall}-1$
-                    \State $e_{m-j} \leftarrow e_{m-j} + N_{skip}(\trans{f_{[m-j]}} x_{m-j} - c_{[m-j]})f_{[m-j]}$\algcomment{Fast-forward auxiliary variable}
+                    \State $e_{m-j} \leftarrow e_{m-j} + N_{skip}(f_{[m-j]}^T x_{m-j} - c_{[m-j]})f_{[m-j]}$\algcomment{Fast-forward auxiliary variable}
                 \EndFor
                 \State $m \leftarrow m - i_{stall}$\label{alg:end}\algcomment{Adjust iteration counter}
             \Else
@@ -66,44 +56,11 @@ The sequence of iterates $\{x_m\}$ generated by Algorithm~\ref{alg:fastforward} 
 \end{algorithmic}
 \end{algorithm}
 
-% \begin{algorithm}
-% \caption{Dykstra's projection algorithm for polyhedral sets with fast forwarding.}
-% \label{alg:fastforward}
-% \begin{algorithmic}[1]
-%     %\Function{DykstraFastForward}{$x^\circ, \{f_i, c_i\}_{i=0}^{n-1}, N_{\max}, \epsilon_{\text{stall}}$}
-%     \Inputs $x^\circ, \{f_i, c_i\}_{i=0}^{n-1}, N_{\max}, \epsilon_{\text{stall}}$
-%     \Outputs projection $x_m$
-%         \State $x \leftarrow x^\circ$; $e_j \leftarrow 0$ \textbf{for} $j=0, \dots, n-1$; $X_{\text{hist}}[0] \leftarrow x^\circ$; $m \leftarrow 0$ \algcomment{Initialisation}
-%         \Statex\hrulefill
-%         \While{$m < N_{\max}$}
-%             \algcomment{Standard Dykstra's update}
-%             \State $e_{[m]} \leftarrow x + e_{[m-n]} - \mathcal{P}_{[m]}(x + e_{[m-n]})$
-%             \State $x \leftarrow x + e_{[m-n]} - e_{[m]}$ 
-%             \State $X_{\text{hist}}[m+1] \leftarrow x$
-%             \Statex\hrulefill
-%             \If{$m \ge n \wedge \twonorm{x - X_{\text{hist}}[m-n]} < \epsilon_{\text{stall}}$} \algcomment{Stalling detected per Definition~\ref{def:stalling}}
-%                 \State $x_{\text{stall}} \leftarrow x$
-%                 \State $N_{stall} \leftarrow \min_{j \in \mathcal{S}} \left(j+\left\lceil k_j / \left(n(c_j - \trans{f_j} x_{\text{stall}})\right)\right\rceil\right)$ \algcomment{Compute using Thm.~\ref{thm:nstall}}
-%                 \State $N_{\text{cycles}} \leftarrow \lceil N_{stall} / n \rceil$
-%                 \For{$j \in \{0, \dots, n-1\}$}
-%                     \State $k_j \leftarrow \trans{f_j} e_j$ \algcomment{Get scalar from $e_j = k_j f_j$}
-%                     \State $\Delta k_j \leftarrow \trans{f_j} x_{\text{stall}} - c_j$
-%                     \State $e_j \leftarrow (k_j + N_{\text{cycles}} \times \Delta k_j) f_j$ \algcomment{Fast-forward dual variable}
-%                 \EndFor
-%                 \State $m \leftarrow m + N_{stall}$ \algcomment{Jump iteration counter}
-%             \Else
-%                 \State $m \leftarrow m + 1$ \algcomment{Increment iteration counter}
-%             \EndIf
-%             \Statex\hrulefill
-%         \EndWhile
-%         \State \Return $x$
-% \end{algorithmic}
-% \end{algorithm}
+The algorithm proceeds identically to the standard Dykstra update until it detects stalling by verifying the stationarity condition $x_m = x_{m-n}$ for all half-spaces, as per Definition~\ref{def:stalling}. Once stalling is detected at iteration $m$, the algorithm executes its fast-forwarding phase: after performing the standard variable update for the current iteration, it computes the exact number of required stalling iterations, $N_{stall}$, and the half-space at which stalling ends, $i_{stall}$, by calling a function that implements Theorem~\ref{thm:nstall}, determining the number of full $n$-step cycles to skip. For each of the $n$ auxiliary variables $e_j$, the algorithm then computes the constant increment $\Delta e_j = (f_j^T x_{\text{stall}} - c_j)f_j$ and applies a single updat: $e_j \leftarrow e_j + N_{\text{skip}} \Delta e_j$, where $N_{\text{skip}}=N_{\text{stall}}$ if $i_{\text{stall}}\geq j$ and $N_{\text{skip}}=N_{\text{stall}}-1$ otherwise. This ``jumps'' the dual variables forward to their state following the stalling period. Finally, the main iteration counter $m$ is adjusted. For practical purposes, in this implementation Algorithm~\ref{alg:fastforward} is executed for a fixed number of iterations $N_{\text{max}}$, the stationarity condition is enforced with a small nonzero tolerance $\epsilon_{\text{stall}}$, and technical details such as updating the set of active half-spaces \textit{a priori} and throughout the algorithm are omitted.
 
-% \begin{cor}[Convergence of Algorithm~\ref{alg:fastforward}]
-% \label{cor:convergence}
-% The sequence of iterates $\{x_m\}$ generated by the Stall-Averse Dykstra's Algorithm (Algorithm~\ref{alg:fastforward}) is guaranteed to converge to the optimal solution $x^\star$ asymptotically.
-% \end{cor}
-% \begin{pf}
-% The fast-forwarding step (lines 13--18) is not an approximation. It computes the exact state of the dual variables $\{e_j\}$ that would be attained by the standard Dykstra's algorithm~\eqref{eq:dykstra} after $N_{stall}$ iterations. Since the proposed algorithm achieves the same iterates after escaping the stalling period as would be attained with standard Dykstra, it retains the convergence guarantees of the original Boyle-Dykstra theorem~\cite{DYKSTRA,DYKSTRAPERKINS}. \qed
-% \end{pf}
+Since the proposed algorithm achieves the same iterates after escaping the stalling period (lines \ref{alg:start}--\ref{alg:end}) as would be attained with Dykstra's method, the Boyle-Dykstra theorem~\cite{DYKSTRA} is retained and the iterates are guaranteed to converge to the optimal solution $x^\star$ asymptotically. This is formalised in Corollary~\ref{cor:convergence} below.
+
+\begin{cor}[Convergence of Algorithm~\ref{alg:fastforward}~\cite{DYKSTRA}]
+\label{cor:convergence}
+The sequence of iterates $\{x_m\}$ generated by Algorithm~\ref{alg:fastforward} converges asymptotically to the optimal solution $x^\star = \mathcal{P}_{\mathcal{H}}(x^\circ)$, i.e. $\lim_{m\rightarrow\infty}\|x_m-x^\star\|_2=0$.
+\end{cor}
