@@ -11,27 +11,27 @@ def run() -> None:
         [0., 1.],
         [0., -1.]
     ])
-    c_box = np.array([1., 1., 1., 1.])
+    b_box = np.array([1., 1., 1., 1.])
     
     corner_count = 1
     
     N_line = np.array([[1/2, 1], [-1/2, -1]])
-    c_line = np.array([1, -1])
+    b_line = np.array([1, -1])
     
     z = np.array([-4., 1.4])
     x_range = [-2.25, 0.5]
     y_range = [0.5, 2]
     delete_half_spaces = True
     
-    max_iter: int = 30
+    max_iter: int = 40
     plot_activity: bool = True
     plot_quivers: bool = False
     
     A: np.ndarray = np.vstack([N_box, N_line])
-    c: np.ndarray = np.hstack([c_box, c_line])
+    b: np.ndarray = np.hstack([b_box, b_line])
     
     solver1 = Dykstra(
-        z, A, c, max_iter,
+        z, A, b, max_iter,
         track_error=True,
         plot_errors=plot_quivers,
         plot_active_halfspaces=plot_activity,
@@ -39,7 +39,7 @@ def run() -> None:
     )
     
     solver2 = FastForward(
-        z, A, c, max_iter,
+        z, A, b, max_iter,
         track_error=True,
         plot_errors=plot_quivers,
         plot_active_halfspaces=plot_activity,
@@ -60,7 +60,7 @@ def run() -> None:
         solver_name=solver1_name,
         initial_point=z,
         N=A,
-        c=c,
+        c=b,
         max_iter=max_iter,
         track_error=True,
         plot_errors=plot_quivers,
@@ -73,7 +73,7 @@ def run() -> None:
         solver_name=solver2_name,
         initial_point=z,
         N=A,
-        c=c,
+        c=b,
         max_iter=max_iter,
         track_error=True,
         plot_errors=plot_quivers,
@@ -84,12 +84,12 @@ def run() -> None:
     print(f"Solver 2 ({solver2_name}) projection: {result2.projection}")
     
     nc_pairs1 = [
-        ("Box", "Greys", N_box, c_box),
-        ("Line", "Greys", N_line, c_line)
+        ("Box", "Greys", N_box, b_box),
+        ("Line", "Greys", N_line, b_line)
     ]
     nc_pairs2 = [
-        ("Box", "Greys", N_box, c_box),
-        ("Line", "Greys", N_line, c_line)
+        ("Box", "Greys", N_box, b_box),
+        ("Line", "Greys", N_line, b_line)
     ]
     
     visualiser = ComparisonVisualiser(

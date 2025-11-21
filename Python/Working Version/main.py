@@ -22,7 +22,7 @@ def run() -> None:
         [0., 1.],  # Top side of the box: y <= 1
         [0., -1.]  # Bottom side of the box: y >= -1
     ])
-    c_box = np.array([1., 1., 1., 1.])
+    b_box = np.array([1., 1., 1., 1.])
 
     # # * With Rounding (uncomment to use)
     # from edge_rounder import rounded_box_constraints
@@ -36,10 +36,10 @@ def run() -> None:
 
     # Define the line constraints
     # The line equation is y = 1 - x/2
-    # Rearranging to get it in the form N*x <= c:
+    # Rearranging to get it in the form N*x <= b:
     # x/2 + y <= 1 & x/2 + y >= 1
     N_line = np.array([[1/2, 1], [-1/2, -1]])
-    c_line = np.array([1, -1])
+    b_line = np.array([1, -1])
 
     # Point to project and x-y range (uncomment wanted example)
 
@@ -94,17 +94,17 @@ def run() -> None:
     # Combine constraints
     # Project onto box, then line
     A: np.ndarray = np.vstack([N_box, N_line])
-    c: np.ndarray = np.hstack([c_box, c_line])
+    b: np.ndarray = np.hstack([b_box, b_line])
 
     # # Project onto line, then box
     # A: np.ndarray = np.vstack([N_line, N_box])
-    # c: np.ndarray = np.hstack([c_line, c_box])
+    # b: np.ndarray = np.hstack([b_line, b_box])
 
     # --- Solver Selection ---
     
     # # * Standard Dykstra's Algorithm
     # solver = DykstraProjectionSolver(
-    #     z, A, c, max_iter,
+    #     z, A, b, max_iter,
     #     track_error=True,
     #     plot_errors=plot_quivers,
     #     plot_active_halfspaces=plot_activity,
@@ -113,7 +113,7 @@ def run() -> None:
     
     # # * Hybrid MAP-Dykstra Algorithm
     # solver = DykstraMapHybridSolver(
-    #     z, A, c, max_iter,
+    #     z, A, b, max_iter,
     #     track_error=True,
     #     plot_errors=plot_quivers,
     #     plot_active_halfspaces=plot_activity,
@@ -122,7 +122,7 @@ def run() -> None:
 
     # * Dykstra with Stalling Detection
     solver = DykstraStallDetectionSolver(
-        z, A, c, max_iter,
+        z, A, b, max_iter,
         track_error=True,
         plot_errors=plot_quivers,
         plot_active_halfspaces=plot_activity,
@@ -146,8 +146,8 @@ def run() -> None:
 
     Nc_pairs = [
         (f"'box'\n(rounded by {corner_count} corner(s))" if corner_count > 1 else "box", 
-         "Greys", N_box, c_box),
-        ("line", "Greys", N_line, c_line)
+         "Greys", N_box, b_box),
+        ("line", "Greys", N_line, b_line)
     ]
 
     # # * Vertical Layout

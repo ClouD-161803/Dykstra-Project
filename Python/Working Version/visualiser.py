@@ -504,7 +504,7 @@ class Visualiser:
 
         active_spaces = self.result.active_half_spaces
         num_of_spaces = active_spaces.shape[0]
-        iterations = np.arange(0, self.max_iter, 1)
+        iterations = np.arange(0, active_spaces.shape[1], 1)
 
         for i in range(num_of_spaces):
             ax = fig.add_subplot(gs[i, 1])
@@ -645,8 +645,8 @@ class VerticalVisualiser(Visualiser):
             self.ax_error.set_xticklabels([])
 
         if self.result.active_half_spaces is not None and self.ax_activity is not None:
-            iterations = np.arange(0, self.max_iter, 1)
             active_spaces = self.result.active_half_spaces
+            iterations = np.arange(0, active_spaces.shape[1], 1)
             markers = ['o', 's', '^', 'D', 'v', '<', '>', 'p', '*', 'h']
             
             for i in range(num_halfspaces):
@@ -836,7 +836,7 @@ class ComparisonVisualiser:
             print(f"Halfspace index {self.display_halfspace_index} out of range.")
             return
         
-        iterations = np.arange(1, self.max_iter + 1, 1) # we start at iteration 1
+        iterations = np.arange(0, active_spaces1.shape[1], 1)
         active_space1 = active_spaces1[self.display_halfspace_index]
         active_space2 = active_spaces2[self.display_halfspace_index]
         

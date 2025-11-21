@@ -223,8 +223,8 @@ class ConvexProjectionSolver(ABC):
         # Initialise first point as the initial point z
         self.x_historical[0, :, :] = self.z.copy()
         self.actual_projection = self._find_optimal_solution(self.z, self.N, self.c, dimensions)
-        # Active halfspaces tracking
-        self.active_half_spaces: np.ndarray = np.zeros((self.n, max_iter))
+        # Active halfspaces tracking, sized for max_iter + 1 to include initial state
+        self.active_half_spaces: np.ndarray = np.zeros((self.n, max_iter + 1))
         # Error tracking arrays sized for max_iter + 1 to include initial error
         self.squared_errors = np.zeros(max_iter + 1)
         self.stalled_errors = np.zeros(max_iter + 1)
@@ -255,9 +255,9 @@ class ConvexProjectionSolver(ABC):
         pass
 
     def _check_activity(self, m: int, i: int, x_temp: np.ndarray, normal: np.ndarray,
-                        offset: np.ndarray, index: int) -> None:
+                        offset: np.ndarray, index: int) -> bool:
         """
-        Check if a half-space is active and record it.
+        Check if a half-space is active.
 
         Args:
             m: Index of half-space.
@@ -266,10 +266,25 @@ class ConvexProjectionSolver(ABC):
             normal: Normal vector of half-space.
             offset: Offset of half-space.
             index: Error index.
+            
+        Returns:
+            bool: True if the half-space is active, False otherwise.
+        """
+        return not self._is_in_half_space(x_temp + self.e[index], normal, offset)
+
+    def _track_activity(self, cycle_index: int) -> None:
+        """
+        Track active half-spaces for the current cycle.
+        This should be called after all n half-spaces have been processed.
+
+        Args:
+            cycle_index: Index for storing activity data (0 for initial, 1 for first cycle, etc).
         """
         if self.plot_active_halfspaces:
-            if not self._is_in_half_space(x_temp + self.e[index], normal, offset):
-                self.active_half_spaces[m][i] = 1
+            for m, (normal, offset) in enumerate(zip(self.N, self.c)):
+                index = (m - self.n) % self.n
+                if not self._is_in_half_space(self.x + self.e[index], normal, offset):
+                    self.active_half_spaces[m][cycle_index] = 1
 
     def _track_error(self, i: int) -> None:
         """
@@ -335,8 +350,9 @@ class DykstraProjectionSolver(ConvexProjectionSolver):
         Returns:
             ProjectionResult: Object containing projection and tracking data.
         """
-        # Track error at the initial point
+        # Track error and activity at the initial point
         self._track_error(0)
+        self._track_activity(0)
         
         # Main body of Dykstra's algorithm
         for i in range(self.max_iter):
@@ -361,8 +377,9 @@ class DykstraProjectionSolver(ConvexProjectionSolver):
                 if self.plot_errors:
                     self.errors_for_plotting[i][m] = self.e[m].copy()
 
-            # Track the squared error after each complete cycle through all n half-spaces
+            # Track the squared error and activity after each complete cycle through all n half-spaces
             self._track_error(i + 1)
+            self._track_activity(i + 1)
 
         return self._format_output()
 
@@ -425,8 +442,9 @@ class DykstraMapHybridSolver(ConvexProjectionSolver):
         Returns:
             ProjectionResult: Object containing projection and tracking data.
         """
-        # Track error at the initial point
+        # Track error and activity at the initial point
         self._track_error(0)
+        self._track_activity(0)
         
         # Main body of Dykstra's algorithm
         for i in range(self.max_iter):
@@ -454,8 +472,9 @@ class DykstraMapHybridSolver(ConvexProjectionSolver):
                 if self.plot_errors:
                     self.errors_for_plotting[i][m] = self.e[m].copy()
 
-            # Track the squared error after each complete cycle through all n half-spaces
+            # Track the squared error and activity after each complete cycle through all n half-spaces
             self._track_error(i + 1)
+            self._track_activity(i + 1)
 
         return self._format_output()
 
@@ -535,8 +554,9 @@ class DykstraStallDetectionSolver(ConvexProjectionSolver):
         """
         self.stalling = False
         
-        # Track error at the initial point
+        # Track error and activity at the initial point
         self._track_error(0)
+        self._track_activity(0)
 
         # Main body of Dykstra's algorithm
         for i in range(self.max_iter):
@@ -560,20 +580,22 @@ class DykstraStallDetectionSolver(ConvexProjectionSolver):
                 # Store historical data for path and quiver plotting, offset by 1
                 self.x_historical[i + 1][m] = self.x.copy()
 
-                # Check for stalling
-                if i > 0:
-                    if ((not self.stalling) and (self.active_half_spaces[m][i] == 1) and
-                            np.array_equal(self.x_historical[i + 1][m], self.x_historical[i][m])):
-                        self.stalling = True
-                        self.m_stalling = m
-                        print(f"Stalling detected at iteration {i} and half-space {self.m_stalling}")
-
                 # Errors
                 if self.plot_errors:
                     self.errors_for_plotting[i][m] = self.e[m].copy()
 
-            # Track the squared error after each complete cycle through all n half-spaces
+            # Track the squared error and activity after each complete cycle through all n half-spaces
             self._track_error(i + 1)
+            self._track_activity(i + 1)
+            
+            # Check for stalling after activity has been tracked
+            if i > 0:
+                for m, (normal, offset) in enumerate(zip(self.N, self.c)):
+                    if ((not self.stalling) and (self.active_half_spaces[m][i + 1] == 1) and
+                            np.array_equal(self.x_historical[i + 1][m], self.x_historical[i][m])):
+                        self.stalling = True
+                        self.m_stalling = m
+                        print(f"Stalling detected at iteration {i} and half-space {self.m_stalling}")
 
         return self._format_output()
 
