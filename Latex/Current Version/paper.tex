@@ -15,7 +15,7 @@ and
 
 
 \begin{abstract}
-Constrained quadratic programs and Euclidean projections are ubiquitous in engineering, arising in machine learning, estimation, control, and signal processing applications. Dykstra's algorithm is an iterative scheme for computing the Euclidean projection of an initial point onto the intersection of convex sets by successively projecting onto each set. Its simplicity and low computational cost make it well-suited for solving large-scale or real-time problems where traditional optimisation routines become computationally burdensome. Despite its strong convergence guarantees, Dykstra's algorithm is known to suffer from stalling---arbitrarily long intervals during which the primal iterates remain constant---rendering its runtime unpredictable and severely limiting its applicability in time-critical settings. Focusing on polyhedral constraint sets, we characterise the stalling phenomenon and derive a closed-form solution for the length of the stalling period once stalling is detected. This result enables a modified, stall-averse version of Dykstra's algorithm that fast-forwards the stalling period via a single, inexpensive update while preserving convergence guarantees. Numerical experiments demonstrate substantial improvements in convergence behaviour, establishing the proposed method as a practical enhancement for a broad class of projection-based algorithms.
+Constrained quadratic programs and Euclidean projections are ubiquitous in engineering, arising in machine learning, estimation, control, and signal processing applications. Dykstra's algorithm is an iterative scheme for computing the Euclidean projection of an initial point onto the intersection of convex sets by successively projecting onto each set. Its low per-iteration computational cost makes it well-suited for solving large-scale or real-time problems where traditional optimisation routines become computationally burdensome. Despite its strong convergence guarantees, Dykstra's algorithm is known to suffer from stalling---arbitrarily long intervals during which the primal iterates remain constant---rendering its runtime unpredictable and severely limiting its applicability in time-critical settings. Focusing on polyhedral constraint sets, we characterise the stalling phenomenon and derive a closed-form solution for the length of the stalling period once stalling is detected. This result enables a modified, stall-averse version of Dykstra's algorithm that fast-forwards the stalling period via a single, inexpensive update while preserving convergence guarantees. Numerical experiments demonstrate substantial improvements in convergence behaviour, establishing the proposed method as a practical enhancement for a broad class of projection-based algorithms.
 \end{abstract}
 
 \end{frontmatter}
@@ -31,6 +31,7 @@ Constrained quadratic programs and Euclidean projections are ubiquitous in engin
 This work was supported by Keble College using the Keble College Small Research Grant \#KSRG118.
 \end{ack}
 
+\newpage
 \printbibliography
 
 \end{document}

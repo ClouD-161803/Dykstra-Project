@@ -1,6 +1,6 @@
 \section{Introduction}
 
-At the core of many problems in optimisation, statistics, and machine learning lies the task of identifying a point that satisfies multiple constraints simultaneously~\cite[Ch. 8]{BOYDCONVEX}. Formally, we consider a Euclidean space $\mathcal{X} \subseteq \Rset^p$ equipped with the norm $\twonorm{x}\eqdef (x_1^2+\dots+x_p^2)^{1/2}$, and a finite family of closed convex subsets $\{\mathcal{H}_i\}_{i=0}^{n-1}\subseteq\mathcal{X}$ with a nonempty intersection $\mathcal{H} := \bigcap_{i=0}^{n-1} \mathcal{H}_i$.
+At the core of many problems in optimisation, statistics, and machine learning lies the task of identifying a point that satisfies multiple constraints simultaneously~\cite[Ch. 8]{BOYDCONVEX}. Formally, we consider a Euclidean space $\mathcal{X} \subseteq \Rset^p$ equipped with the Euclidean norm $\twonorm{x}\eqdef (x_1^2+\dots+x_p^2)^{1/2}$, and a finite family of $n$ closed convex subsets $\{\mathcal{H}_i\}_{i=0}^{n-1}\subseteq\mathcal{X}$ with a nonempty intersection $\mathcal{H} := \bigcap_{i=0}^{n-1} \mathcal{H}_i$.
 Given an arbitrary point $x^\circ \in \mathcal{X}$, the task of finding its Eucledian projection $x^\star \eqdef \mathcal{P}_{\mathcal{H}}(x^\circ)$ onto set $\mathcal{H}$ can be formulated as the \textit{constrained quadratic program} (CQP)
 \begin{equation} \label{eq:projection}
 \begin{array}{ll}
@@ -8,11 +8,11 @@ Given an arbitrary point $x^\circ \in \mathcal{X}$, the task of finding its Eucl
     \text{subject to} & x \in \bigcap_{i=0}^{n-1}\mathcal{H}_i,
 \end{array}
 \end{equation}
-where $x$ represents the decision variable, and the initial point $x^\circ$ and sets $\{\mathcal{H}_i\}_{i=0}^{n-1}$ are the problem data. In this paper, we assume $\mathcal{H}$ to be a polyhedral set, meaning $\mathcal{H}=\set{x\in\Rset^p}{A x \leq b}$, and each $\mathcal{H}_i$ a half-space, written as
+where $x$ is the decision variable, and $x^\circ$ and sets $\{\mathcal{H}_i\}_{i=0}^{n-1}$ are the problem data. In this paper, we assume $\mathcal{H}$ to be a polyhedral set, meaning $\mathcal{H}=\set{x \in \mathcal{X}}{A x \leq b}$, with $A \in \Rset^{n\times p}$ and $b \in \Rset^n$, and each $\mathcal{H}_i$ a half-space, written as
 \begin{align}\label{eq:sets_i}
-\mathcal{H}_i\coloneqq\set{x\in\Rset^p}{a_i^Tx \leq b_i}, \quad i=0,\dots,n-1,
+\mathcal{H}_i\coloneqq\set{x\in\mathcal{X}}{a_i^Tx \leq b_i}, \quad i=0,\dots,n-1,
 \end{align}
-where the vector $a_i$ is a \emph{unit} ($\twonorm{a_i}=1$) normal to each bounding hyperplane $\partial\mathcal{H}_i\coloneqq\set{x\in\Rset^p}{a_i^Tx = b_i}$.
+where vectors $a_i$ are unit normals to each bounding hyperplane $\partial\mathcal{H}_i\coloneqq\set{x\in\mathcal{X}}{a_i^Tx = b_i}$.
 
 The formulation in~\eqref{eq:projection} is widely adopted in optimisation applications, ranging from restricted least squares and isotonic regression in statistics, to signal and image processing (where convex sets encode prior knowledge, like non-negativity or sparsity), control engineering (where system constraints can be modelled using convex sets), and machine learning (where solutions to learning problems must often adhere to structural constraints~\cite{BAUSCHKESWISS}). While in some cases the projection onto $\mathcal{H}$ is easy to compute, for arbitrary polyhedral sets the projection operator $\mathcal{P}_{\mathcal{H}}$ onto the intersection set is intractable and no closed-form solution to~\eqref{eq:projection} is known. In these cases, the solution to~\eqref{eq:projection} can be obtained using standard optimisation software packages. To solve~\eqref{eq:projection}, most solvers require introducing an additional variable $z\eqdef Ax$ (e.g., \cite{osqp} or~\cite{ocpb:16}) that is projected onto the set $\set{z\in\Rset^n}{z \leq b}$, for which an explicit solution exists~\cite{BOYDCONVEX}. However, for large $n$, this variable augmentation can reduce the computational efficiency, particularly in high-dimensional or time-sensitive applications when the projection is part of an overarching algorithm~\cite{OPTIMNESTEROV,KEMPF20206542}.
 
