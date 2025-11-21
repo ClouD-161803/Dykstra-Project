@@ -40,7 +40,7 @@ k_m =
 k_{m-n} + x_m^T f_{[m]} - c_{[m]} & \text{otherwise}
 \end{cases}.
 \end{align}
-The convergence of Dykstra's iterates to the Eucledian projection has been analysed in~\cite{DYKSTRAPERKINS,DYKSTRAPOLY,DYKSTRAPOLY2} for polyhedral sets. The analysis in~\cite{DYKSTRAPOLY} is based on partitioning the collection $\{\mathcal{H}_i\}_{i=0}^{n-1}$ into inactive subsets---which contain the projection $x^\star$ in the \emph{interior} of the half-space $\text{int}\,\mathcal{H}_i$---and active subsets---when the projection lies on the \emph{boundary} of the half-space $H_i$. We fomalise the two subsets, $\mathcal{A}$ and $\mathcal{B}$, respectively, as follows
+The convergence of Dykstra's iterates to the Eucledian projection has been analysed in~\cite{DYKSTRAPERKINS,DYKSTRAPOLY,DYKSTRAPOLY2} for polyhedral sets. The analysis in~\cite{DYKSTRAPOLY} is based on partitioning the collection $\{\mathcal{H}_i\}_{i=0}^{n-1}$ into an \emph{inactive} subset---half-spaces containing the projection $x^\star$ in their \emph{interior} $\text{int}\,\mathcal{H}_i$---and an \emph{active} subset---half-spaces containing the projection on their \emph{boundary} $H_i$. The two subsets, $\mathcal{A}$ and $\mathcal{B}$, respectively, are formalised as follows:
 \begin{align}
 &\mathcal{A} \eqdef \set{i\in\lbrace 0,\dots,n-1\rbrace}{x_\infty\in H_i},
 &\mathcal{B}\eqdef \lbrace 0,\dots,n-1\rbrace\backslash \mathcal{A}=\set{i\in\lbrace 0,\dots,n-1\rbrace}{x_\infty\in \text{int}\,\mathcal{H}_i},
