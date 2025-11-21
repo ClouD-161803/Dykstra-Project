@@ -396,7 +396,7 @@ class Visualiser:
             ax.set_aspect('equal')
             ax.set_xlabel('X', fontsize=self.fontsize_label)
             ax.set_ylabel('Y', fontsize=self.fontsize_label)
-            ax.set_title(f"{self.solver_name} executed for {self.max_iter - 1} iterations", fontsize=self.fontsize_title)
+            ax.set_title(f"{self.solver_name} executed for {self.max_iter} iterations", fontsize=self.fontsize_title)
             ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
             ax.grid(True)
             ax.legend(fontsize=self.fontsize_legend)
@@ -746,9 +746,9 @@ class ComparisonVisualiser:
                     self.plot_2d_space(N, c, X, Y, label, cmap, ax)
 
             ax.set_aspect('equal')
-            ax.set_xlabel('X', fontsize=self.fontsize_label)
-            ax.set_ylabel('Y', fontsize=self.fontsize_label)
-            ax.set_title(f"{solver_name} - {self.max_iter - 1} iterations", fontsize=self.fontsize_title)
+            ax.set_xlabel(r'$x$ coordinate', fontsize=self.fontsize_label)
+            ax.set_ylabel(r'$y$ coordinate', fontsize=self.fontsize_label)
+            ax.set_title(f"{solver_name} - {self.max_iter} iterations", fontsize=self.fontsize_title)
             ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
             ax.grid(True)
             
@@ -781,7 +781,7 @@ class ComparisonVisualiser:
         squared_errors2 = self.result2.squared_errors.copy()
         stalled_errors1 = self.result1.stalled_errors
         
-        iterations = np.arange(0, self.max_iter, 1)
+        iterations = np.arange(1, self.max_iter + 1, 1) # we start at iteration 1
         
         ax.plot(iterations, squared_errors1, color='#1f77b4', linestyle='-', 
                 marker='^', markersize=4, label=f'{self.solver_name1}')
@@ -791,21 +791,22 @@ class ComparisonVisualiser:
         stalled_indices = []
         if stalled_errors1 is not None:
             for i in range(len(stalled_errors1)):
+                index = i + 1  # shift by 1 to match iteration index
                 error = stalled_errors1[i]
                 if error is not None and not (isinstance(error, float) and np.isnan(error)):
                     error_val = float(error)
                     rect_width = 0.4
                     rect_height = error_val * 0.15
-                    rect = Rectangle((i - rect_width/2, error_val - rect_height/2), 
+                    rect = Rectangle((index - rect_width/2, error_val - rect_height/2), 
                                     rect_width, rect_height, 
                                     alpha=0.3, color='yellow', zorder=1)
                     ax.add_patch(rect)
                     stalled_indices.append(i)
         
-        ax.scatter(self.max_iter - 1, squared_errors1[-1],
+        ax.scatter(self.max_iter, squared_errors1[-1],
                   color='#1f77b4', marker='*', s=150, zorder=5,
                   label=f'{self.solver_name1} (final)')
-        ax.scatter(self.max_iter - 1, squared_errors2[-1],
+        ax.scatter(self.max_iter, squared_errors2[-1],
                   color='#ff7f0e', marker='*', s=150, zorder=5,
                   label=f'{self.solver_name2} (final)')
         
@@ -813,9 +814,9 @@ class ComparisonVisualiser:
             ax.plot([], [], color='yellow', marker='s', linestyle='', markersize=8,
                    label='Stalling')
         
-        ax.set_xlabel('Iteration', fontsize=self.fontsize_label)
-        ax.set_ylabel('Squared errors', fontsize=self.fontsize_label)
-        ax.set_title('Error comparison (stalling highlighted)', fontsize=self.fontsize_title)
+        # ax.set_xlabel('Cycle', fontsize=self.fontsize_label)
+        ax.set_ylabel('Squared error', fontsize=self.fontsize_label)
+        # ax.set_title('Error comparison', fontsize=self.fontsize_title)
         ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
         ax.grid(True, axis='x', alpha=0.3, which='both')
         ax.locator_params(axis='y', nbins=5)
@@ -836,7 +837,7 @@ class ComparisonVisualiser:
             print(f"Halfspace index {self.display_halfspace_index} out of range.")
             return
         
-        iterations = np.arange(0, self.max_iter, 1)
+        iterations = np.arange(1, self.max_iter + 1, 1) # we start at iteration 1
         active_space1 = active_spaces1[self.display_halfspace_index]
         active_space2 = active_spaces2[self.display_halfspace_index]
         
@@ -849,11 +850,11 @@ class ComparisonVisualiser:
         
         ax.set_ylim(-0.1, 1.1)
         ax.set_yticks([0, 1])
-        ax.set_yticklabels(['Inactive', 'Active'], fontsize=self.fontsize_tick)
+        ax.set_yticklabels(['0', '1'], fontsize=self.fontsize_tick)
         ax.tick_params(axis='x', which='major', labelsize=self.fontsize_tick)
-        ax.set_xlabel('Iteration', fontsize=self.fontsize_label)
-        ax.set_ylabel('Halfspace activity', fontsize=self.fontsize_label)
-        ax.set_title(f'Halfspace {self.display_halfspace_index} activity', fontsize=self.fontsize_title)
+        ax.set_xlabel('Cycle', fontsize=self.fontsize_label)
+        ax.set_ylabel(f'Halfspace {self.display_halfspace_index} activity', fontsize=self.fontsize_label)
+        # ax.set_title(f'Halfspace {self.display_halfspace_index} activity', fontsize=self.fontsize_title)
         ax.grid(True, axis='x', alpha=0.3, which='both')
         ax.legend(fontsize=self.fontsize_legend)
 

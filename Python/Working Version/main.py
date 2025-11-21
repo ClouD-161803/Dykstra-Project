@@ -87,7 +87,7 @@ def run() -> None:
 
     # --- Configuration ---
     
-    max_iter: int = 50 + 1
+    max_iter: int = 50
     plot_activity: bool = True
     plot_quivers: bool = False
     

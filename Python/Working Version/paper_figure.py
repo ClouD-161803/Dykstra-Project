@@ -23,7 +23,7 @@ def run() -> None:
     y_range = [0.5, 2]
     delete_half_spaces = True
     
-    max_iter: int = 50 + 1
+    max_iter: int = 30
     plot_activity: bool = True
     plot_quivers: bool = False
     
