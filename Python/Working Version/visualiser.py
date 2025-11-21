@@ -469,7 +469,7 @@ class Visualiser:
         stalled_errors = self.result.stalled_errors
         converged_errors = self.result.converged_errors
         
-        iterations = np.arange(0, self.max_iter, 1)
+        iterations = np.arange(0, len(squared_errors), 1)
         
         ax.plot(iterations, squared_errors, color='red',
                 label='errors', linestyle='-', marker='o', markersize=4)
@@ -477,7 +477,7 @@ class Visualiser:
                 label='stalling', linestyle='-', marker='o', markersize=4)
         ax.plot(iterations, converged_errors, color='green',
                 label='converged\n(error under 1e-3)', linestyle='-', marker='o', markersize=4)
-        ax.scatter(self.max_iter - 1, squared_errors[-1],
+        ax.scatter(len(squared_errors) - 1, squared_errors[-1],
                    color='green', marker='*', s=100, zorder=5,
                    label=f'final error is {format(squared_errors[-1], ".2e")}')
 
@@ -781,7 +781,7 @@ class ComparisonVisualiser:
         squared_errors2 = self.result2.squared_errors.copy()
         stalled_errors1 = self.result1.stalled_errors
         
-        iterations = np.arange(1, self.max_iter + 1, 1) # we start at iteration 1
+        iterations = np.arange(0, len(squared_errors1), 1)
         
         ax.plot(iterations, squared_errors1, color='#1f77b4', linestyle='-', 
                 marker='^', markersize=4, label=f'{self.solver_name1}')
@@ -791,22 +791,21 @@ class ComparisonVisualiser:
         stalled_indices = []
         if stalled_errors1 is not None:
             for i in range(len(stalled_errors1)):
-                index = i + 1  # shift by 1 to match iteration index
                 error = stalled_errors1[i]
                 if error is not None and not (isinstance(error, float) and np.isnan(error)):
                     error_val = float(error)
-                    rect_width = 0.4
-                    rect_height = error_val * 0.15
-                    rect = Rectangle((index - rect_width/2, error_val - rect_height/2), 
+                    rect_width = 0.8
+                    rect_height = error_val * 0.5
+                    rect = Rectangle((i - rect_width/2, error_val - rect_height/2), 
                                     rect_width, rect_height, 
                                     alpha=0.3, color='yellow', zorder=1)
                     ax.add_patch(rect)
                     stalled_indices.append(i)
         
-        ax.scatter(self.max_iter, squared_errors1[-1],
+        ax.scatter(len(squared_errors1) - 1, squared_errors1[-1],
                   color='#1f77b4', marker='*', s=150, zorder=5,
                   label=f'{self.solver_name1} (final)')
-        ax.scatter(self.max_iter, squared_errors2[-1],
+        ax.scatter(len(squared_errors2) - 1, squared_errors2[-1],
                   color='#ff7f0e', marker='*', s=150, zorder=5,
                   label=f'{self.solver_name2} (final)')
         

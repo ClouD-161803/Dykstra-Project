@@ -225,9 +225,10 @@ class ConvexProjectionSolver(ABC):
         self.actual_projection = self._find_optimal_solution(self.z, self.N, self.c, dimensions)
         # Active halfspaces tracking
         self.active_half_spaces: np.ndarray = np.zeros((self.n, max_iter))
-        self.squared_errors = np.zeros(max_iter)
-        self.stalled_errors = np.zeros(max_iter)
-        self.converged_errors = np.zeros(max_iter)
+        # Error tracking arrays sized for max_iter + 1 to include initial error
+        self.squared_errors = np.zeros(max_iter + 1)
+        self.stalled_errors = np.zeros(max_iter + 1)
+        self.converged_errors = np.zeros(max_iter + 1)
 
     @abstractmethod
     def _update_error(self, m: int, x_temp: np.ndarray, x: np.ndarray, index: int) -> None:
@@ -334,6 +335,9 @@ class DykstraProjectionSolver(ConvexProjectionSolver):
         Returns:
             ProjectionResult: Object containing projection and tracking data.
         """
+        # Track error at the initial point
+        self._track_error(0)
+        
         # Main body of Dykstra's algorithm
         for i in range(self.max_iter):
             # Iterate over every half plane
@@ -357,8 +361,8 @@ class DykstraProjectionSolver(ConvexProjectionSolver):
                 if self.plot_errors:
                     self.errors_for_plotting[i][m] = self.e[m].copy()
 
-            # Track the squared error
-            self._track_error(i)
+            # Track the squared error after each complete cycle through all n half-spaces
+            self._track_error(i + 1)
 
         return self._format_output()
 
@@ -421,6 +425,9 @@ class DykstraMapHybridSolver(ConvexProjectionSolver):
         Returns:
             ProjectionResult: Object containing projection and tracking data.
         """
+        # Track error at the initial point
+        self._track_error(0)
+        
         # Main body of Dykstra's algorithm
         for i in range(self.max_iter):
             # Choose Beta at the start of every iteration
@@ -447,8 +454,8 @@ class DykstraMapHybridSolver(ConvexProjectionSolver):
                 if self.plot_errors:
                     self.errors_for_plotting[i][m] = self.e[m].copy()
 
-            # Track the squared error
-            self._track_error(i)
+            # Track the squared error after each complete cycle through all n half-spaces
+            self._track_error(i + 1)
 
         return self._format_output()
 
@@ -527,6 +534,9 @@ class DykstraStallDetectionSolver(ConvexProjectionSolver):
             ProjectionResult: Object containing projection and tracking data.
         """
         self.stalling = False
+        
+        # Track error at the initial point
+        self._track_error(0)
 
         # Main body of Dykstra's algorithm
         for i in range(self.max_iter):
@@ -562,8 +572,8 @@ class DykstraStallDetectionSolver(ConvexProjectionSolver):
                 if self.plot_errors:
                     self.errors_for_plotting[i][m] = self.e[m].copy()
 
-            # Track the squared error
-            self._track_error(i)
+            # Track the squared error after each complete cycle through all n half-spaces
+            self._track_error(i + 1)
 
         return self._format_output()
 
