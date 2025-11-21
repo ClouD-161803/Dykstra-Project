@@ -36,7 +36,7 @@ Note that $N_{stall}$ in Theorem~\ref{thm:nstall} refers to the number of $n$-st
 \begin{algorithmic}[1]
     \Inputs $x^\circ, \{a_i, b_i\}_{i=0}^{n-1}, N_{\max}, \epsilon_{\text{stall}}$
     \Outputs projection $x_m$
-        \State $x \leftarrow x^\circ$; $e_j \leftarrow 0\,\forall j\in\lbrace 0,\dots,n-1\rbrace$;  $m \leftarrow 0$ 
+        \State $x_0 \leftarrow x^\circ$; $e_j \leftarrow 0\,\forall j\in\lbrace 0,\dots,n-1\rbrace$;  $m \leftarrow 0$ 
         % \Statex\hrulefill
         \While{$m < N_{\max}$}
             \State $x_{m+1} \leftarrow \mathcal{P}_{[m]}(x_m + e_{[m-n]})$
