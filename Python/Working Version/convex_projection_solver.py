@@ -554,7 +554,7 @@ class DykstraStallDetectionSolver(ConvexProjectionSolver):
         """
         self.stalling = False
         
-        # Track error and activity at the initial point
+        # Track error at the initial point
         self._track_error(0)
         self._track_activity(0)
 
@@ -580,22 +580,21 @@ class DykstraStallDetectionSolver(ConvexProjectionSolver):
                 # Store historical data for path and quiver plotting, offset by 1
                 self.x_historical[i + 1][m] = self.x.copy()
 
-                # Errors
-                if self.plot_errors:
-                    self.errors_for_plotting[i][m] = self.e[m].copy()
-
-            # Track the squared error and activity after each complete cycle through all n half-spaces
-            self._track_error(i + 1)
-            self._track_activity(i + 1)
-            
-            # Check for stalling after activity has been tracked
-            if i > 0:
-                for m, (normal, offset) in enumerate(zip(self.N, self.c)):
-                    if ((not self.stalling) and (self.active_half_spaces[m][i + 1] == 1) and
+                # Check for stalling
+                if i > 0:
+                    if ((not self.stalling) and (self.active_half_spaces[m][i] == 1) and
                             np.array_equal(self.x_historical[i + 1][m], self.x_historical[i][m])):
                         self.stalling = True
                         self.m_stalling = m
                         print(f"Stalling detected at iteration {i} and half-space {self.m_stalling}")
+
+                # Errors
+                if self.plot_errors:
+                    self.errors_for_plotting[i][m] = self.e[m].copy()
+
+            # Track the squared error after each complete cycle through all n half-spaces
+            self._track_error(i + 1)
+            self._track_activity(i + 1)
 
         return self._format_output()
 
