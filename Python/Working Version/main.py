@@ -89,7 +89,7 @@ def run() -> None:
     
     max_iter: int = 50
     plot_activity: bool = True
-    plot_quivers: bool = False
+    plot_quivers: bool = True
     
     # Combine constraints
     # Project onto box, then line

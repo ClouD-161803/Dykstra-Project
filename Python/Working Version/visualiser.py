@@ -438,17 +438,18 @@ class Visualiser:
                 label='projection path')
 
         # Plot the errors (quivers) - only where errors were tracked
+        # Skip i=0 (initial point x0) as it has no errors associated with it
         if errors_for_plotting is not None and errors_for_plotting.ndim == 3:
             max_iter, n_spaces = errors_for_plotting.shape[0], errors_for_plotting.shape[1]
-            for i in range(max_iter):
+            for i in range(1, max_iter + 1):  # Start from 1 to skip x0
                 for m in range(n_spaces):
-                    error = errors_for_plotting[i, m]
+                    error = errors_for_plotting[i - 1, m]  # Offset by 1 since errors_for_plotting starts from i=0
                     # Only plot quiver if error vector is non-zero
                     if not np.allclose(error, 0):
                         # The point for the quiver is the start of the projection step
                         point = path[i, m]
                         ax.quiver(point[0], point[1], error[0], error[1],
-                                 angles='xy', scale_units='xy', scale=1, alpha=0.3)
+                                 angles='xy', scale_units='xy', scale=1, alpha=0.3, width=0.002, zorder=5)
 
         ax.legend()
 
