@@ -314,10 +314,10 @@ class Visualiser:
         self.fig: Figure | None = None
         self.ax_main: Axes | None = None
         self.ax_error: Axes | None = None
-        self.fontsize_title = 16
-        self.fontsize_label = 14
-        self.fontsize_tick = 12
-        self.fontsize_legend = 14
+        self.fontsize_title = 24
+        self.fontsize_label = 22
+        self.fontsize_tick = 18
+        self.fontsize_legend = 20
 
     def plot_2d_space(self, N: np.ndarray, c: np.ndarray, X: np.ndarray, Y: np.ndarray,
                       label: str, cmap: str, ax: Axes) -> None:
