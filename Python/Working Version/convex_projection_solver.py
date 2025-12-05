@@ -280,11 +280,10 @@ class ConvexProjectionSolver(ABC):
         Args:
             cycle_index: Index for storing activity data (0 for initial, 1 for first cycle, etc).
         """
-        if self.plot_active_halfspaces:
-            for m, (normal, offset) in enumerate(zip(self.N, self.c)):
-                index = (m - self.n) % self.n
-                if not self._is_in_half_space(self.x + self.e[index], normal, offset):
-                    self.active_half_spaces[m][cycle_index] = 1
+        for m, (normal, offset) in enumerate(zip(self.N, self.c)):
+            index = (m - self.n) % self.n
+            if not self._is_in_half_space(self.x + self.e[index], normal, offset):
+                self.active_half_spaces[m][cycle_index] = 1
 
     def _track_error(self, i: int) -> None:
         """
