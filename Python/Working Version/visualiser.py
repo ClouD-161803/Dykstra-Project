@@ -397,6 +397,8 @@ class Visualiser:
             ax.set_xlabel('X coordinate', fontsize=self.fontsize_label)
             ax.set_ylabel('Y coordinate', fontsize=self.fontsize_label)
             ax.set_title(f"{self.solver_name} Executed for {self.max_iter} iterations", fontsize=self.fontsize_title)
+            ax.set_xlim(self.x_range[0], self.x_range[1])
+            ax.set_ylim(self.y_range[0], self.y_range[1])
             ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
             ax.grid(True)
             ax.legend(fontsize=self.fontsize_legend)

@@ -51,7 +51,7 @@ def run() -> None:
 
     # * Simple top left - no stalling - y y y
     z = np.array([-0.75, 1.2])
-    x_range = [-2., 1.]
+    x_range = [-1.5, 0.75]
     y_range = [0.5, 1.4]
     delete_half_spaces = True
 
