@@ -43,22 +43,22 @@ def run() -> None:
 
     # Point to project and x-y range (uncomment wanted example)
 
-    # # * Simple top left - stalling - y y y
-    z = np.array([-4., 1.4])
-    x_range = [-2.25, 0.5]
-    y_range = [0.5, 2]
-    delete_half_spaces = True
-
-    # # * Simple top left - no stalling - y y y
-    # z = np.array([-0.75, 1.3])
-    # x_range = [-1.8, 0.5]
-    # y_range = [0.5, 2.]
+    # # # * Simple top left - stalling - y y y
+    # z = np.array([-4., 1.4])
+    # x_range = [-2.25, 0.5]
+    # y_range = [0.5, 2]
     # delete_half_spaces = True
+
+    # * Simple top left - no stalling - y y y
+    z = np.array([-0.75, 1.2])
+    x_range = [-2., 1.]
+    y_range = [0.5, 1.4]
+    delete_half_spaces = True
 
     # # * Intersection - no stalling - y y n
     # z = np.array([0.5, 1.75])
     # x_range = [-2., 2.]
-    # y_range = [-2., 2.]
+    # y_range = [0., 2.]
     # delete_half_spaces = True
 
     # # * Very far to the top left - y n y
@@ -88,8 +88,8 @@ def run() -> None:
     # --- Configuration ---
     
     max_iter: int = 50
-    plot_activity: bool = True
-    plot_quivers: bool = True
+    plot_activity: bool = False
+    plot_quivers: bool = False
     
     # Combine constraints
     # Project onto box, then line
@@ -102,14 +102,14 @@ def run() -> None:
 
     # --- Solver Selection ---
     
-    # # * Standard Dykstra's Algorithm
-    # solver = DykstraProjectionSolver(
-    #     z, A, b, max_iter,
-    #     track_error=True,
-    #     plot_errors=plot_quivers,
-    #     plot_active_halfspaces=plot_activity,
-    #     delete_spaces=delete_half_spaces
-    # )
+    # * Standard Dykstra's Algorithm
+    solver = DykstraProjectionSolver(
+        z, A, b, max_iter,
+        track_error=True,
+        plot_errors=plot_quivers,
+        plot_active_halfspaces=plot_activity,
+        delete_spaces=delete_half_spaces
+    )
     
     # # * Hybrid MAP-Dykstra Algorithm
     # solver = DykstraMapHybridSolver(
@@ -120,14 +120,14 @@ def run() -> None:
     #     delete_spaces=delete_half_spaces
     # )
 
-    # * Dykstra with Stalling Detection
-    solver = DykstraStallDetectionSolver(
-        z, A, b, max_iter,
-        track_error=True,
-        plot_errors=plot_quivers,
-        plot_active_halfspaces=plot_activity,
-        delete_spaces=delete_half_spaces
-    )
+    # # * Dykstra with Stalling Detection
+    # solver = DykstraStallDetectionSolver(
+    #     z, A, b, max_iter,
+    #     track_error=True,
+    #     plot_errors=plot_quivers,
+    #     plot_active_halfspaces=plot_activity,
+    #     delete_spaces=delete_half_spaces
+    # )
     
 
     solver_name = solver.__class__.__name__
@@ -145,9 +145,9 @@ def run() -> None:
     print(f"The squared-error is {np.dot(distance, distance)}\n")
 
     Nc_pairs = [
-        (f"'box'\n(rounded by {corner_count} corner(s))" if corner_count > 1 else "box", 
+        (f"'Box'\n(rounded by {corner_count} corner(s))" if corner_count > 1 else "Box", 
          "Greys", N_box, b_box),
-        ("line", "Greys", N_line, b_line)
+        ("Line", "Greys", N_line, b_line)
     ]
 
     # # * Vertical Layout

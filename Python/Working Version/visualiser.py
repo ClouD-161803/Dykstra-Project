@@ -362,10 +362,10 @@ class Visualiser:
 
         if N[0, 1] == 0:
             ax.axvline(x=c[0] / N[0, 0], linestyle='-', linewidth=2,
-                        label='vertical line', color=colour)
+                        label='Vertical line', color=colour)
         elif N[0, 0] == 0:
             ax.axhline(y=c[0] / N[0, 1], linestyle='-', linewidth=2,
-                        label='horizontal line', color=colour)
+                        label='Horizontal line', color=colour)
         else:
             x_line = np.linspace(self.x_range[0], self.x_range[1], 100)
             y_line = (c[0] - N[0, 0] * x_line) / N[0, 1]
@@ -394,9 +394,9 @@ class Visualiser:
                                    "Please provide N and c for 1D or 2D cases.")
 
             ax.set_aspect('equal')
-            ax.set_xlabel('X', fontsize=self.fontsize_label)
-            ax.set_ylabel('Y', fontsize=self.fontsize_label)
-            ax.set_title(f"{self.solver_name} executed for {self.max_iter} iterations", fontsize=self.fontsize_title)
+            ax.set_xlabel('X coordinate', fontsize=self.fontsize_label)
+            ax.set_ylabel('Y coordinate', fontsize=self.fontsize_label)
+            ax.set_title(f"{self.solver_name} Executed for {self.max_iter} iterations", fontsize=self.fontsize_title)
             ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
             ax.grid(True)
             ax.legend(fontsize=self.fontsize_legend)
@@ -435,7 +435,7 @@ class Visualiser:
         # Plot the path
         ax.plot(x_coords, y_coords, marker='.', linestyle='--',
                 color='blue', linewidth=0.5, markersize=1,
-                label='projection path')
+                label='Projection path')
 
         # Plot the errors (quivers) - only where errors were tracked
         # Skip i=0 (initial point x0) as it has no errors associated with it
@@ -473,18 +473,18 @@ class Visualiser:
         iterations = np.arange(0, len(squared_errors), 1)
         
         ax.plot(iterations, squared_errors, color='red',
-                label='errors', linestyle='-', marker='o', markersize=4)
+                label='Errors', linestyle='-', marker='o', markersize=4)
         ax.plot(iterations, stalled_errors, color='#D5B60A',
-                label='stalling', linestyle='-', marker='o', markersize=4)
+                label='Stalling', linestyle='-', marker='o', markersize=4)
         ax.plot(iterations, converged_errors, color='green',
-                label='converged\n(error under 1e-3)', linestyle='-', marker='o', markersize=4)
+                label='Converged\n(error under 1e-3)', linestyle='-', marker='o', markersize=4)
         ax.scatter(len(squared_errors) - 1, squared_errors[-1],
                    color='green', marker='*', s=100, zorder=5,
-                   label=f'final error is {format(squared_errors[-1], ".2e")}')
+                   label=f'Final error is {format(squared_errors[-1], ".2e")}')
 
-        ax.set_xlabel('iteration', fontsize=self.fontsize_label)
-        ax.set_ylabel('squared errors', fontsize=self.fontsize_label)
-        ax.set_title('convergence of squared errors', fontsize=self.fontsize_title)
+        ax.set_xlabel('Iteration', fontsize=self.fontsize_label)
+        ax.set_ylabel('Squared errors', fontsize=self.fontsize_label)
+        ax.set_title('Convergence of squared errors', fontsize=self.fontsize_title)
         ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
         ax.grid(True, axis='x', alpha=0.3)
         ax.locator_params(axis='y', nbins=5)
@@ -519,21 +519,21 @@ class Visualiser:
                    linestyle='-', marker='o', linewidth=1.5, markersize=4)
             
             # Add legend entry
-            ax.plot([], [], color='black', label=f'halfspace {i}', linestyle='-', marker='o', linewidth=1.5, markersize=4)
+            ax.plot([], [], color='black', label=f'Halfspace {i}', linestyle='-', marker='o', linewidth=1.5, markersize=4)
             
             ax.set_ylim(-0.1, 1.1)
             ax.set_yticks([0, 1])
-            ax.set_yticklabels(['inactive', 'active'], fontsize=self.fontsize_tick)
+            ax.set_yticklabels(['Inactive', 'Active'], fontsize=self.fontsize_tick)
             ax.tick_params(axis='x', which='major', labelsize=self.fontsize_tick)
             
             # Only show x-axis labels on the bottom plot
             if i < num_of_spaces - 1:
                 ax.set_xticklabels([])
             else:
-                ax.set_xlabel('iteration', fontsize=self.fontsize_label)
+                ax.set_xlabel('Iteration', fontsize=self.fontsize_label)
 
             if i == 0:
-                ax.set_title('halfspace activity', fontsize=self.fontsize_title)
+                ax.set_title('Halfspace activity', fontsize=self.fontsize_title)
 
             ax.grid(True, axis='x', alpha=0.3)
             ax.legend(loc='center right', fontsize=self.fontsize_legend)
@@ -563,14 +563,14 @@ class Visualiser:
 
         if plot_original_point is not None:
             self.ax_main.scatter(plot_original_point[0], plot_original_point[1],
-                               color='blue', marker='o', label='original point', zorder=5)
+                               color='blue', marker='o', label='Original point', zorder=5)
 
         self.ax_main.scatter(self.result.projection[0], self.result.projection[1],
-                           color='green', marker='*', s=100, label='projection', zorder=5)
+                           color='green', marker='*', s=100, label='Projection', zorder=5)
 
         if plot_optimal_point is not None:
             self.ax_main.scatter(plot_optimal_point[0], plot_optimal_point[1],
-                               color='green', marker='*', s=40, label='optimal solution', zorder=5)
+                               color='green', marker='*', s=40, label='Optimal solution', zorder=5)
 
         self.ax_main.legend(fontsize=self.fontsize_legend)
 
@@ -628,15 +628,14 @@ class VerticalVisualiser(Visualiser):
 
         if plot_original_point is not None:
             self.ax_main.scatter(plot_original_point[0], plot_original_point[1],
-                               color='blue', marker='o', label='original point', zorder=5)
+                               color='blue', marker='o', label='Original point', zorder=5)
 
         self.ax_main.scatter(self.result.projection[0], self.result.projection[1],
-                           color='green', marker='*', s=100, label='projection', zorder=5)
+                           color='green', marker='*', s=100, label='Projection', zorder=5)
 
         if plot_optimal_point is not None:
             self.ax_main.scatter(plot_optimal_point[0], plot_optimal_point[1],
-                               color='red', marker='*', s=50, label='optimal solution', zorder=5)
-
+                               color='red', marker='*', s=50, label='Optimal solution', zorder=5)
         self.ax_main.legend(fontsize=self.fontsize_legend)
 
         if self.result.squared_errors is not None:
