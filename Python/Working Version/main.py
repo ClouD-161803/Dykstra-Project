@@ -43,17 +43,17 @@ def run() -> None:
 
     # Point to project and x-y range (uncomment wanted example)
 
-    # # # * Simple top left - stalling - y y y
-    # z = np.array([-4., 1.4])
-    # x_range = [-2.25, 0.5]
-    # y_range = [0.5, 2]
-    # delete_half_spaces = True
-
-    # * Simple top left - no stalling - y y y
-    z = np.array([-0.75, 1.2])
-    x_range = [-1.5, 0.75]
-    y_range = [0.5, 1.4]
+    # * Simple top left - stalling - y y y
+    z = np.array([-2., 1.4])
+    x_range = [-2.05, 0.5]
+    y_range = [0.8, 1.45]
     delete_half_spaces = True
+
+    # # * Simple top left - no stalling - y y y
+    # z = np.array([-0.75, 1.2])
+    # x_range = [-1.5, 0.75]
+    # y_range = [0.7, 1.4]
+    # delete_half_spaces = True
 
     # # * Intersection - no stalling - y y n
     # z = np.array([0.5, 1.75])
@@ -87,7 +87,7 @@ def run() -> None:
 
     # --- Configuration ---
     
-    max_iter: int = 50
+    max_iter: int = 10
     plot_activity: bool = False
     plot_quivers: bool = False
     

@@ -396,7 +396,7 @@ class Visualiser:
             ax.set_aspect('equal')
             ax.set_xlabel('X coordinate', fontsize=self.fontsize_label)
             ax.set_ylabel('Y coordinate', fontsize=self.fontsize_label)
-            ax.set_title(f"{self.solver_name} Executed for {self.max_iter} iterations", fontsize=self.fontsize_title)
+            # ax.set_title(f"{self.solver_name} Executed for {self.max_iter} iterations", fontsize=self.fontsize_title)
             ax.set_xlim(self.x_range[0], self.x_range[1])
             ax.set_ylim(self.y_range[0], self.y_range[1])
             ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
@@ -475,7 +475,7 @@ class Visualiser:
         iterations = np.arange(0, len(squared_errors), 1)
         
         ax.plot(iterations, squared_errors, color='red',
-                label='Errors', linestyle='-', marker='o', markersize=4)
+                label='Error', linestyle='-', marker='o', markersize=4)
         ax.plot(iterations, stalled_errors, color='#D5B60A',
                 label='Stalling', linestyle='-', marker='o', markersize=4)
         ax.plot(iterations, converged_errors, color='green',
@@ -485,11 +485,11 @@ class Visualiser:
                    label=f'Final error is {format(squared_errors[-1], ".2e")}')
 
         ax.set_xlabel('Iteration', fontsize=self.fontsize_label)
-        ax.set_ylabel('Squared errors', fontsize=self.fontsize_label)
-        ax.set_title('Convergence of squared errors', fontsize=self.fontsize_title)
+        ax.set_ylabel('Squared error', fontsize=self.fontsize_label)
+        ax.set_title('Convergence of squared error', fontsize=self.fontsize_title)
+        ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
         ax.grid(True, axis='x', alpha=0.3)
-        ax.locator_params(axis='y', nbins=5)
         ax.legend(fontsize=self.fontsize_legend)
 
     def plot_active_halfspaces(self, fig: Figure, gs: gridspec.GridSpec) -> None:
@@ -642,9 +642,7 @@ class VerticalVisualiser(Visualiser):
 
         if self.result.squared_errors is not None:
             self.plot_errors(self.ax_error)
-            self.ax_error.set_title('')
-            self.ax_error.set_xlabel('')
-            self.ax_error.set_xticklabels([])
+            self.ax_error.set_title("")
 
         if self.result.active_half_spaces is not None and self.ax_activity is not None:
             active_spaces = self.result.active_half_spaces
