@@ -44,8 +44,8 @@ def run() -> None:
     # Point to project and x-y range (uncomment wanted example)
 
     # * Simple top left - stalling - y y y
-    z = np.array([-4., 1.4])
-    x_range = [-4.05, 0.5]
+    z = np.array([-2., 1.4])
+    x_range = [-2.05, 0.5]
     y_range = [0.8, 1.45]
     delete_half_spaces = True
 
