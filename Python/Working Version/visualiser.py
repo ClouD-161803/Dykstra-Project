@@ -484,7 +484,7 @@ class Visualiser:
                    color='green', marker='*', s=100, zorder=5,
                    label=f'Final error is {format(squared_errors[-1], ".2e")}')
 
-        ax.set_xlabel('Iteration', fontsize=self.fontsize_label)
+        ax.set_xlabel('Cycle', fontsize=self.fontsize_label)
         ax.set_ylabel('Squared error', fontsize=self.fontsize_label)
         ax.set_title('Convergence of squared error', fontsize=self.fontsize_title)
         ax.set_yscale('log')
@@ -532,7 +532,7 @@ class Visualiser:
             if i < num_of_spaces - 1:
                 ax.set_xticklabels([])
             else:
-                ax.set_xlabel('Iteration', fontsize=self.fontsize_label)
+                ax.set_xlabel('Cycle', fontsize=self.fontsize_label)
 
             if i == 0:
                 ax.set_title('Halfspace activity', fontsize=self.fontsize_title)
@@ -643,6 +643,9 @@ class VerticalVisualiser(Visualiser):
         if self.result.squared_errors is not None:
             self.plot_errors(self.ax_error)
             self.ax_error.set_title("")
+            # Remove xlabel from error plot if activity plot will be displayed below
+            if self.result.active_half_spaces is not None:
+                self.ax_error.set_xlabel('')
 
         if self.result.active_half_spaces is not None and self.ax_activity is not None:
             active_spaces = self.result.active_half_spaces
@@ -660,7 +663,7 @@ class VerticalVisualiser(Visualiser):
             self.ax_activity.set_yticks([0, 1])
             self.ax_activity.set_yticklabels(['0', '1'], fontsize=self.fontsize_tick)
             self.ax_activity.tick_params(axis='x', which='major', labelsize=self.fontsize_tick)
-            self.ax_activity.set_xlabel('iteration', fontsize=self.fontsize_label)
+            self.ax_activity.set_xlabel('Cycle', fontsize=self.fontsize_label)
             self.ax_activity.set_ylabel('halfspace activity', fontsize=self.fontsize_label)
             self.ax_activity.grid(True, axis='x', alpha=0.3)
             self.ax_activity.legend(loc='center right', fontsize=self.fontsize_legend)
@@ -749,6 +752,8 @@ class ComparisonVisualiser:
             ax.set_xlabel(r'$x$ coordinate', fontsize=self.fontsize_label)
             ax.set_ylabel(r'$y$ coordinate', fontsize=self.fontsize_label)
             ax.set_title(f"{solver_name} - {self.max_iter} iterations", fontsize=self.fontsize_title)
+            ax.set_xlim(self.x_range[0], self.x_range[1])
+            ax.set_ylim(self.y_range[0], self.y_range[1])
             ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
             ax.grid(True)
             
@@ -816,9 +821,9 @@ class ComparisonVisualiser:
         # ax.set_xlabel('Cycle', fontsize=self.fontsize_label)
         ax.set_ylabel('Squared error', fontsize=self.fontsize_label)
         # ax.set_title('Error comparison', fontsize=self.fontsize_title)
+        ax.set_yscale('log')
         ax.tick_params(axis='both', which='major', labelsize=self.fontsize_tick)
         ax.grid(True, axis='x', alpha=0.3, which='both')
-        ax.locator_params(axis='y', nbins=5)
         ax.legend(fontsize=self.fontsize_legend, loc='best')
 
     def plot_halfspace_comparison(self, ax: Axes) -> None:

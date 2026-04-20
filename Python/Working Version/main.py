@@ -46,7 +46,7 @@ def run() -> None:
     # * Simple top left - stalling - y y y
     z = np.array([-2., 1.4])
     x_range = [-2.05, 0.5]
-    y_range = [0.8, 1.45]
+    y_range = [0.8, 1.5]
     delete_half_spaces = True
 
     # # * Simple top left - no stalling - y y y
@@ -88,8 +88,8 @@ def run() -> None:
     # --- Configuration ---
     
     max_iter: int = 10
-    plot_activity: bool = False
-    plot_quivers: bool = False
+    plot_activity: bool = True
+    plot_quivers: bool = True
     
     # Combine constraints
     # Project onto box, then line
@@ -102,14 +102,14 @@ def run() -> None:
 
     # --- Solver Selection ---
     
-    # # * Standard Dykstra's Algorithm
-    # solver = DykstraProjectionSolver(
-    #     z, A, b, max_iter,
-    #     track_error=True,
-    #     plot_errors=plot_quivers,
-    #     plot_active_halfspaces=plot_activity,
-    #     delete_spaces=delete_half_spaces
-    # )
+    # * Standard Dykstra's Algorithm
+    solver = DykstraProjectionSolver(
+        z, A, b, max_iter,
+        track_error=True,
+        plot_errors=plot_quivers,
+        plot_active_halfspaces=plot_activity,
+        delete_spaces=delete_half_spaces
+    )
     
     # # * Hybrid MAP-Dykstra Algorithm
     # solver = DykstraMapHybridSolver(
@@ -120,14 +120,14 @@ def run() -> None:
     #     delete_spaces=delete_half_spaces
     # )
 
-    # * Dykstra with Stalling Detection
-    solver = DykstraStallDetectionSolver(
-        z, A, b, max_iter,
-        track_error=True,
-        plot_errors=plot_quivers,
-        plot_active_halfspaces=plot_activity,
-        delete_spaces=delete_half_spaces
-    )
+    # # * Dykstra with Stalling Detection
+    # solver = DykstraStallDetectionSolver(
+    #     z, A, b, max_iter,
+    #     track_error=True,
+    #     plot_errors=plot_quivers,
+    #     plot_active_halfspaces=plot_activity,
+    #     delete_spaces=delete_half_spaces
+    # )
     
 
     solver_name = solver.__class__.__name__

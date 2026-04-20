@@ -18,9 +18,9 @@ def run() -> None:
     N_line = np.array([[1/2, 1], [-1/2, -1]])
     b_line = np.array([1, -1])
     
-    z = np.array([-4., 1.4])
-    x_range = [-2.25, 0.5]
-    y_range = [0.5, 2]
+    z = np.array([-2., 1.4])
+    x_range = [-2.05, 0.5]
+    y_range = [0.8, 1.5]
     delete_half_spaces = True
     
     max_iter: int = 30
